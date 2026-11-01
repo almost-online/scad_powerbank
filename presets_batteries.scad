@@ -1,5 +1,5 @@
-// Battery preset library.
-// Dimensions in millimeters: [width, length, height, geometry type].
+// Бібліотека пресетів акумуляторних блоків.
+// Розміри в міліметрах: [ширина, довжина, висота, тип геометрії].
 
 function get_battery_params(battery_type) =
     battery_type == "18650" ? [18.5, 65, 18.5, "cylindrical"] :

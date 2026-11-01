@@ -1,3 +1,3 @@
 # AGENT.md
 
-See full instructions and project rules in [AGENTS.md](./AGENTS.md).
+Дивіться повні інструкції та правила проєкту у файлі [AGENTS.md](./AGENTS.md).
