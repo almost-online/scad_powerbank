@@ -234,122 +234,122 @@
   <div id="topHeader">
     <div>
       <h2>PowerBank Board Sketcher</h2>
-      <span style="font-size: 12px; color: #64748b;">Візуальний редактор плат та автоматичний генератор OpenSCAD пресетів</span>
+      <span style="font-size: 12px; color: #64748b;">Visual board editor and automatic OpenSCAD preset generator</span>
     </div>
     <div id="serverControls">
-      <span id="serverStatusBadge" class="server-badge">Сервер активний</span>
+      <span id="serverStatusBadge" class="server-badge">Server active</span>
       <select id="serverBoardSelect">
-        <option value="">-- Оберіть плату з сервера --</option>
+        <option value="">-- Select board from server --</option>
       </select>
-      <button id="loadServerBoardBtn" class="primary" type="button">Завантажити</button>
-      <button id="refreshServerBoardsBtn" type="button" title="Оновити список пресетів">↻</button>
-      <button id="saveServerBtn" class="server-btn" type="button" style="font-weight: 600;">💾 Зберегти на сервер</button>
+      <button id="loadServerBoardBtn" class="primary" type="button">Load</button>
+      <button id="refreshServerBoardsBtn" type="button" title="Refresh preset list">↻</button>
+      <button id="saveServerBtn" class="server-btn" type="button" style="font-weight: 600;">💾 Save to Server</button>
     </div>
   </div>
 
   <div id="stepsContainer">
-    <!-- Крок 1 -->
+    <!-- Step 1 -->
     <div class="step-card" id="cardStep1">
-      <div class="step-header">Крок 1: Фото плати</div>
+      <div class="step-header">Step 1: Board Photo</div>
       <div class="controls-row">
-        <label>Файл: <input id="image" type="file" accept="image/*"></label>
+        <label>File: <input id="image" type="file" accept="image/*"></label>
       </div>
       <div class="controls-row" style="font-size: 11px; color: #64748b;">
-        Або виберіть готову плату в меню зверху.
+        Or select a ready-made board from the menu above.
       </div>
     </div>
 
-    <!-- Крок 2 -->
+    <!-- Step 2 -->
     <div class="step-card" id="cardStep2">
-      <div class="step-header">Крок 2: Вирівнювання</div>
+      <div class="step-header">Step 2: Alignment</div>
       <div class="controls-row">
-        <label>Кут, ° <input id="rotation" type="number" value="0" step="0.1"></label>
-        <button id="rotateLeft" type="button" title="Повернути проти годинникової">↶ −0.1°</button>
-        <button id="rotateRight" type="button" title="Повернути за годинниковою">↷ +0.1°</button>
+        <label>Angle, ° <input id="rotation" type="number" value="0" step="0.1"></label>
+        <button id="rotateLeft" type="button" title="Rotate counter-clockwise">↶ −0.1°</button>
+        <button id="rotateRight" type="button" title="Rotate clockwise">↷ +0.1°</button>
       </div>
       <div class="controls-row">
-        <button id="finishAlignment" class="primary" type="button">Підтвердити вирівнювання</button>
+        <button id="finishAlignment" class="primary" type="button">Confirm Alignment</button>
       </div>
     </div>
 
-    <!-- Крок 3 -->
+    <!-- Step 3 -->
     <div class="step-card" id="cardStep3">
-      <div class="step-header">Крок 3: Калібрування масштабу</div>
+      <div class="step-header">Step 3: Scale Calibration</div>
       <div class="controls-row">
-        <label>Еталон, мм <input id="known" type="number" value="60"></label>
-        <button id="finishCalibration" class="primary" type="button">Завершити калібрування</button>
+        <label>Reference, mm <input id="known" type="number" value="60"></label>
+        <button id="finishCalibration" class="primary" type="button">Finish Calibration</button>
       </div>
     </div>
 
-    <!-- Крок 4 -->
+    <!-- Step 4 -->
     <div class="step-card" id="cardStep4">
-      <div class="step-header">Крок 4: Розміри та назва плати</div>
+      <div class="step-header">Step 4: Board Dimensions and Name</div>
       <div class="controls-row">
-        <label>ID / назва: <input id="boardName" type="text" value="custom_board" placeholder="abkn_pd45w_3s"></label>
+        <label>ID / name: <input id="boardName" type="text" value="custom_board" placeholder="abkn_pd45w_3s"></label>
       </div>
       <div class="controls-row">
-        <label>W <input id="boardWidth" type="number" value="60" title="Ширина плати, мм"> мм</label>
-        <label>L <input id="boardLength" type="number" value="18" title="Довжина плати, мм"> мм</label>
-        <label>H <input id="boardHeight" type="number" value="26" title="Висота плати, мм"> мм</label>
+        <label>W <input id="boardWidth" type="number" value="60" title="Board width, mm"> mm</label>
+        <label>L <input id="boardLength" type="number" value="18" title="Board length, mm"> mm</label>
+        <label>H <input id="boardHeight" type="number" value="26" title="Board height, mm"> mm</label>
       </div>
       <div class="controls-row">
-        <label>Радіус кутів, мм <input id="boardRadius" type="number" value="5" min="0" step="0.1"></label>
+        <label>Corner radius, mm <input id="boardRadius" type="number" value="5" min="0" step="0.1"></label>
       </div>
       <div class="controls-row">
-        <button id="drawBoardBtn" type="button" title="Накреслити контур плати">Накреслити прямокутник</button>
-        <button id="finishBoard" class="primary" type="button">Підтвердити плату (Крок 5)</button>
+        <button id="drawBoardBtn" type="button" title="Draw board outline">Draw Rectangle</button>
+        <button id="finishBoard" class="primary" type="button">Confirm Board (Step 5)</button>
       </div>
     </div>
 
-    <!-- Крок 5 -->
+    <!-- Step 5 -->
     <div class="step-card" id="cardStep5">
-      <div class="step-header">Крок 5: Розмітка компонентів та генерація вирізів</div>
+      <div class="step-header">Step 5: Component Layout and Cutout Generation</div>
       <div class="controls-row">
-        <label>Грань (Face):
+        <label>Face:
           <select id="face">
-            <option value="front">Front (Передня грань / порти)</option>
-            <option value="top">Top (Верхня грань / кришка)</option>
-            <option value="side">Side (Бічна грань)</option>
+            <option value="front">Front (Front face / ports)</option>
+            <option value="top">Top (Top face / lid)</option>
+            <option value="side">Side (Side face)</option>
           </select>
         </label>
-        <label>Тип об'єкта:
+        <label>Object type:
           <select id="kind">
-            <option value="hole">отвір (виріз)</option>
-            <option value="display">дисплей</option>
-            <option value="button">кнопка</option>
-            <option value="indicator">індикатор</option>
+            <option value="hole">hole (cutout)</option>
+            <option value="display">display</option>
+            <option value="button">button</option>
+            <option value="indicator">indicator</option>
           </select>
         </label>
-        <label>Форма:
+        <label>Shape:
           <select id="tool">
-            <option value="rectangle">прямокутник</option>
-            <option value="circle">коло</option>
-            <option value="polygon">полігон</option>
+            <option value="rectangle">rectangle</option>
+            <option value="circle">circle</option>
+            <option value="polygon">polygon</option>
           </select>
         </label>
-        <label>Радіус, мм <input id="rectRadius" type="number" value="0" min="0" step="0.1"></label>
-        <label>Clearance, мм <input id="elementClearance" type="number" value="0.4" min="0" step="0.05"></label>
-        <label><input id="orthogonalPolygon" type="checkbox"> Полігон: тільки 90° (H/V)</label>
-        <button id="finish" type="button">Завершити полігон</button>
+        <label>Radius, mm <input id="rectRadius" type="number" value="0" min="0" step="0.1"></label>
+        <label>Clearance, mm <input id="elementClearance" type="number" value="0.4" min="0" step="0.05"></label>
+        <label><input id="orthogonalPolygon" type="checkbox"> Polygon: 90° only (H/V)</label>
+        <button id="finish" type="button">Finish Polygon</button>
       </div>
       <div class="controls-row" style="margin-top: 4px; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
-        <label>Стандартні порти:
+        <label>Standard ports:
           <select id="usbPreset">
-            <option value="usb_a">USB Type-A (14×7 мм, r=0, clr=0.35)</option>
-            <option value="usb_c">USB Type-C (9×4 мм, r=2 мм, clr=0.5)</option>
+            <option value="usb_a">USB Type-A (14×7 mm, r=0, clr=0.35)</option>
+            <option value="usb_c">USB Type-C (9×4 mm, r=2 mm, clr=0.5)</option>
           </select>
         </label>
-        <button id="addUsbPreset" type="button">Додати порт</button>
+        <button id="addUsbPreset" type="button">Add port</button>
         <div style="flex: 1;"></div>
-        <label>Файл експорту: <input id="boardNameExport" type="text" value="custom_board" placeholder="custom_board"></label>
-        <button id="export" class="success" type="button" style="font-weight: 600;">📥 Експорт JSON файлу</button>
+        <label>Export file: <input id="boardNameExport" type="text" value="custom_board" placeholder="custom_board"></label>
+        <button id="export" class="success" type="button" style="font-weight: 600;">📥 Export JSON</button>
       </div>
     </div>
   </div>
 
   <div id="infoBar">
-    <div id="status">Завантажте фото або оберіть плату зі списку сервера.</div>
-    <div id="measurement" aria-live="polite">Координати курсора: —</div>
+    <div id="status">Upload a photo or select a board from the server list.</div>
+    <div id="measurement" aria-live="polite">Cursor coordinates: —</div>
   </div>
 
   <div id="workspace">
@@ -360,16 +360,16 @@
     <aside id="sidePanel">
       <div class="panel-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <h3>Позначені об’єкти</h3>
-          <button id="clearSelectionBtn" type="button" style="padding:2px 8px; font-size:11px;" title="Зняти виділення фігури">Зняти виділення</button>
+          <h3>Marked Objects</h3>
+          <button id="clearSelectionBtn" type="button" style="padding:2px 8px; font-size:11px;" title="Clear figure selection">Clear selection</button>
         </div>
-        <div id="marksList">Поки що немає об’єктів.</div>
+        <div id="marksList">No objects yet.</div>
       </div>
 
       <div class="panel-box" id="propsPanel">
-        <h3>Властивості виділеного елемента</h3>
+        <h3>Selected Element Properties</h3>
         <div id="propsContent">
-          <div style="color: #64748b; font-size: 12px;">Виберіть елемент на полотні або зі списку.</div>
+          <div style="color: #64748b; font-size: 12px;">Select an element on the canvas or from the list.</div>
         </div>
       </div>
     </aside>
@@ -385,9 +385,9 @@
     const $ = id => document.getElementById(id);
 
     function markLabel(m) {
-      if (m.kind === 'board') return `Плата [${m.w ? (m.w / scale).toFixed(1) : 0} × ${m.h ? (m.h / scale).toFixed(1) : 0} мм]`;
-      const clr = m.clearance != null ? `, clr=${m.clearance}мм` : '';
-      return `${m.kind}${m.face ? ' [' + m.face + ']' : ''} — ${m.type}${m.type === 'rectangle' && m.radius ? `, r=${(m.radius / scale).toFixed(1)} мм` : ''}${clr}`;
+      if (m.kind === 'board') return `Board [${m.w ? (m.w / scale).toFixed(1) : 0} × ${m.h ? (m.h / scale).toFixed(1) : 0} mm]`;
+      const clr = m.clearance != null ? `, clr=${m.clearance}mm` : '';
+      return `${m.kind}${m.face ? ' [' + m.face + ']' : ''} — ${m.type}${m.type === 'rectangle' && m.radius ? `, r=${(m.radius / scale).toFixed(1)} mm` : ''}${clr}`;
     }
 
     function addMark(mark) {
@@ -402,7 +402,7 @@
     }
 
     function distance(a, b) { return Math.hypot(b[0] - a[0], b[1] - a[1]); }
-    function formatMeasurement(value) { return `${(value / scale).toFixed(2)} мм`; }
+    function formatMeasurement(value) { return `${(value / scale).toFixed(2)} mm`; }
 
     function pointInPolygon(point, vs) {
       if (!vs || vs.length < 3) return false;
@@ -448,15 +448,15 @@
       $('finishCalibration').disabled = stage !== 3;
       $('finishBoard').disabled = stage !== 4;
       if (stage === 1) {
-        $('status').textContent = 'Крок 1: Завантажте фото плати або виберіть готову плату зі списку сервера.';
+        $('status').textContent = 'Step 1: Upload a board photo or select a ready-made board from the server list.';
       } else if (stage === 2) {
-        $('status').textContent = 'Крок 2: Вирівняйте горизонтальні та вертикальні лінії за еталонними краями плати.';
+        $('status').textContent = 'Step 2: Align horizontal and vertical lines to the reference edges of the board.';
       } else if (stage === 3) {
-        $('status').textContent = 'Крок 3: Вкажіть довжину еталона та проведіть калібрувальну лінію.';
+        $('status').textContent = 'Step 3: Enter the reference length and draw the calibration line.';
       } else if (stage === 4) {
-        $('status').textContent = 'Крок 4: Намалюйте прямокутник плати на фото або скоригуйте розміри/радіус, потім натисніть «Підтвердити плату».';
+        $('status').textContent = 'Step 4: Draw the board rectangle on the photo or adjust dimensions/radius, then click Confirm Board.';
       } else if (stage === 5) {
-        $('status').textContent = 'Крок 5: Розмітьте отвори, дисплеї, кнопки, індикатори або додайте USB-порти та збережіть на сервер.';
+        $('status').textContent = 'Step 5: Mark holes, displays, buttons, indicators or add USB ports and save to server.';
       }
     }
 
@@ -473,13 +473,13 @@
     }
 
     function updateMeasurement(point) {
-      const cursor = `Координати курсора: (${(point[0] / scale).toFixed(2)}, ${(point[1] / scale).toFixed(2)}) мм`;
+      const cursor = `Cursor coordinates: (${(point[0] / scale).toFixed(2)}, ${(point[1] / scale).toFixed(2)}) mm`;
       let detail = '';
-      if (calibration && calibration.length === 1) detail = `; довжина лінії: ${formatMeasurement(distance(calibration[0], snapCalibrationPoint(point)))}`;
-      if (calibration && calibration.length === 2) detail = `; довжина лінії: ${formatMeasurement(distance(calibration[0], calibration[1]))}`;
+      if (calibration && calibration.length === 1) detail = `; line length: ${formatMeasurement(distance(calibration[0], snapCalibrationPoint(point)))}`;
+      if (calibration && calibration.length === 2) detail = `; line length: ${formatMeasurement(distance(calibration[0], calibration[1]))}`;
       if (drawing) {
-        if (drawing.tool === 'rectangle') detail = `; довжина: ${formatMeasurement(Math.abs(point[0] - drawing.x))}, ширина: ${formatMeasurement(Math.abs(point[1] - drawing.y))}`;
-        if (drawing.tool === 'circle') detail = `; радіус: ${formatMeasurement(distance([drawing.x, drawing.y], point))}`;
+        if (drawing.tool === 'rectangle') detail = `; length: ${formatMeasurement(Math.abs(point[0] - drawing.x))}, width: ${formatMeasurement(Math.abs(point[1] - drawing.y))}`;
+        if (drawing.tool === 'circle') detail = `; radius: ${formatMeasurement(distance([drawing.x, drawing.y], point))}`;
       }
       $('measurement').textContent = cursor + detail;
     }
@@ -489,7 +489,7 @@
       panel.replaceChildren();
       const m = marks.find(mark => mark.id === selectedMarkId);
       if (!m) {
-        panel.innerHTML = '<div style="color: #64748b; font-size: 12px;">Виберіть елемент на полотні або зі списку.</div>';
+        panel.innerHTML = '<div style="color: #64748b; font-size: 12px;">Select an element on the canvas or from the list.</div>';
         return;
       }
 
@@ -507,18 +507,18 @@
       const rowKind = document.createElement('div');
       rowKind.className = 'prop-row';
       rowKind.innerHTML = `
-        <label>Тип:
+        <label>Type:
           <select id="propKind">
-            <option value="board">плата (board)</option>
+            <option value="board">board</option>
             <option value="usb_a">USB Type-A</option>
             <option value="usb_c">USB Type-C</option>
-            <option value="display">дисплей</option>
-            <option value="button">кнопка</option>
-            <option value="indicator">індикатор</option>
-            <option value="hole">виріз (hole)</option>
+            <option value="display">display</option>
+            <option value="button">button</option>
+            <option value="indicator">indicator</option>
+            <option value="hole">hole</option>
           </select>
         </label>
-        <label>Грань:
+        <label>Face:
           <select id="propFace">
             <option value="front">Front</option>
             <option value="top">Top</option>
@@ -547,17 +547,17 @@
 
       if (m.type === 'circle') {
         rowCoords.innerHTML = `
-          <label>X, мм <input id="propX" type="number" step="0.1" value="${xMm}"></label>
-          <label>Y, мм <input id="propY" type="number" step="0.1" value="${yOrZMm}"></label>
-          <label>Ø, мм <input id="propDia" type="number" step="0.1" value="${rMm}"></label>
+          <label>X, mm <input id="propX" type="number" step="0.1" value="${xMm}"></label>
+          <label>Y, mm <input id="propY" type="number" step="0.1" value="${yOrZMm}"></label>
+          <label>Ø, mm <input id="propDia" type="number" step="0.1" value="${rMm}"></label>
         `;
       } else if (m.type === 'rectangle') {
         rowCoords.innerHTML = `
-          <label>X, мм <input id="propX" type="number" step="0.1" value="${xMm}"></label>
-          <label>Y, мм <input id="propY" type="number" step="0.1" value="${yOrZMm}"></label>
-          <label>W, мм <input id="propW" type="number" step="0.1" value="${wMm}"></label>
-          <label>H, мм <input id="propH" type="number" step="0.1" value="${hMm}"></label>
-          <label>r, мм <input id="propR" type="number" step="0.1" value="${rMm}"></label>
+          <label>X, mm <input id="propX" type="number" step="0.1" value="${xMm}"></label>
+          <label>Y, mm <input id="propY" type="number" step="0.1" value="${yOrZMm}"></label>
+          <label>W, mm <input id="propW" type="number" step="0.1" value="${wMm}"></label>
+          <label>H, mm <input id="propH" type="number" step="0.1" value="${hMm}"></label>
+          <label>r, mm <input id="propR" type="number" step="0.1" value="${rMm}"></label>
         `;
       }
       container.append(rowCoords);
@@ -566,8 +566,8 @@
       const rowClearance = document.createElement('div');
       rowClearance.className = 'prop-row';
       rowClearance.innerHTML = `
-        <label>Зазор (clearance), мм <input id="propClearance" type="number" step="0.05" min="0" value="${m.clearance != null ? m.clearance : 0.4}"></label>
-        <button id="propDeleteBtn" class="deleteMark" type="button" style="padding: 4px 10px; font-size: 12px;">Видалити</button>
+        <label>Clearance (clearance), mm <input id="propClearance" type="number" step="0.05" min="0" value="${m.clearance != null ? m.clearance : 0.4}"></label>
+        <button id="propDeleteBtn" class="deleteMark" type="button" style="padding: 4px 10px; font-size: 12px;">Delete</button>
       `;
       container.append(rowClearance);
 
@@ -636,7 +636,7 @@
     function renderMarksList() {
       const list = $('marksList');
       list.replaceChildren();
-      if (!marks.length) { list.textContent = 'Поки що немає об’єктів.'; return; }
+      if (!marks.length) { list.textContent = 'No objects yet.'; return; }
       marks.forEach(m => {
         const item = document.createElement('div');
         item.className = 'markItem' + (m.id === selectedMarkId ? ' selected' : '');
@@ -647,7 +647,7 @@
         const remove = document.createElement('button');
         remove.className = 'deleteMark';
         remove.type = 'button';
-        remove.textContent = 'Видалити';
+        remove.textContent = 'Delete';
         remove.onclick = (e) => {
           e.stopPropagation();
           marks = marks.filter(mark => mark.id !== m.id);
@@ -660,10 +660,10 @@
         item.onclick = () => {
           if (selectedMarkId === m.id) {
             selectedMarkId = null;
-            $('status').textContent = 'Виділення знято. Тепер можна додати нову фігуру.';
+            $('status').textContent = 'Selection cleared. You can now add a new figure.';
           } else {
             selectedMarkId = m.id;
-            $('status').textContent = `Вибрано «${m.id}. ${m.kind}». Перетягуйте мишкою по полотну або редагуйте у панелі властивостей.`;
+            $('status').textContent = `Selected "${m.id}. ${m.kind}». Drag with mouse on canvas or edit in the properties panel.`;
           }
           renderMarksList();
           renderPropertiesPanel();
@@ -692,7 +692,7 @@
         ctx.setLineDash([10, 6]);
         ctx.beginPath(); ctx.moveTo(0, alignment.horizontal); ctx.lineTo(canvas.width, alignment.horizontal); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(alignment.vertical, 0); ctx.lineTo(alignment.vertical, canvas.height); ctx.stroke(); ctx.setLineDash([]);
-        ctx.fillStyle = '#7c3aed'; ctx.fillText('перетягніть лінії для вирівнювання', 12, 20); ctx.restore();
+        ctx.fillStyle = '#7c3aed'; ctx.fillText('drag lines to align', 12, 20); ctx.restore();
       }
       canvas.style.cursor = (stage === 4 || stage === 5) && selectedMarkId ? 'move' : 'crosshair';
       marks.forEach(m => {
@@ -763,7 +763,7 @@
         $('rotation').value = 0;
         setStage(2);
         redraw();
-        $('status').textContent='Перетягніть лінії на краї плати, поверніть фото за потреби та підтвердьте вирівнювання.';
+        $('status').textContent='Drag lines to the board edges, rotate the photo if needed and confirm alignment.';
       };
       image.src = URL.createObjectURL(f);
     };
@@ -820,20 +820,20 @@
           addMark({ type: 'rectangle', kind: 'board', x: Math.min(sx, x), y: Math.min(sy, y), w, h, radius: rad });
           $('boardWidth').value = +(w / scale).toFixed(2);
           $('boardLength').value = +(h / scale).toFixed(2);
-          $('status').textContent = `Контур плати позначено: ${(w / scale).toFixed(2)} × ${(h / scale).toFixed(2)} мм. За потреби скоригуйте кути або перейдіть до Кроку 5.`;
+          $('status').textContent = `Board outline marked: ${(w / scale).toFixed(2)} × ${(h / scale).toFixed(2)} mm. Adjust corners if needed or proceed to Step 5.`;
         } else {
           const rad = Math.min(+$('rectRadius').value * scale || 0, w / 2, h / 2);
           const face = $('face') ? $('face').value : 'front';
           const clr = +$('elementClearance').value || 0.4;
           addMark({ type: 'rectangle', kind: $('kind').value, face, x: Math.min(sx, x), y: Math.min(sy, y), w, h, radius: rad, clearance: clr });
-          $('status').textContent = `Фігуру [${$('kind').value}] додано. Редагуйте координати та зазор у панелі праворуч.`;
+          $('status').textContent = `Figure [${$('kind').value}] added. Edit coordinates and clearance in the right panel.`;
         }
       }
       if (drawing.tool === 'circle' && drawing.r > 0) {
         const face = $('face') ? $('face').value : 'front';
         const clr = +$('elementClearance').value || 0.4;
         addMark({ type: 'circle', kind: $('kind').value, face, x: sx, y: sy, r: Math.hypot(x - sx, y - sy), clearance: clr });
-        $('status').textContent = `Коло [${$('kind').value}] додано.`;
+        $('status').textContent = `Circle [${$('kind').value}] added.`;
       }
       drawing = null;
       canvas.releasePointerCapture?.(e.pointerId);
@@ -862,10 +862,10 @@
           const known = +$('known').value, measured = distance(calibration[0], calibration[1]);
           if (known > 0 && measured > 0) {
             scale = measured / known;
-            $('status').textContent = `Масштаб відкалібровано: ${scale.toFixed(2)} px/мм. Натисніть «Завершити калібрування».`;
+            $('status').textContent = `Scale calibrated: ${scale.toFixed(2)} px/mm. Click Finish Calibration.`;
           } else {
             calibration = [];
-            $('status').textContent = 'Введіть додатну міру та виберіть два різні кінці відрізка.';
+            $('status').textContent = 'Enter a positive value and pick two different endpoints.';
           }
         }
         updateMeasurement([x, y]);
@@ -1041,9 +1041,9 @@
     $('rotation').oninput = () => { rotation = +$('rotation').value || 0; redraw(); };
     $('rotateLeft').onclick = () => { rotation -= 0.1; $('rotation').value = +rotation.toFixed(2); redraw(); };
     $('rotateRight').onclick = () => { rotation += 0.1; $('rotation').value = +rotation.toFixed(2); redraw(); };
-    $('finishAlignment').onclick = () => { setStage(3); $('status').textContent = 'Вирівнювання застосовано. Введіть довжину еталона та проведіть лінію.'; };
+    $('finishAlignment').onclick = () => { setStage(3); $('status').textContent = 'Alignment applied. Enter reference length and draw a line.'; };
     $('finishCalibration').onclick = () => {
-      if (!calibration || calibration.length < 2) { $('status').textContent = 'Спочатку поставте 2 точки калібрувальної лінії.'; return; }
+      if (!calibration || calibration.length < 2) { $('status').textContent = 'First place 2 calibration line points.'; return; }
       setStage(4);
       syncBoardFromInputs();
     };
@@ -1051,7 +1051,7 @@
     $('boardWidth').oninput = () => { syncBoardFromInputs(); };
     $('boardLength').oninput = () => { syncBoardFromInputs(); };
     $('boardRadius').oninput = () => { syncBoardFromInputs(); };
-    $('drawBoardBtn').onclick = () => { setStage(4); $('status').textContent = 'Протягніть прямокутник плати на фото.'; };
+    $('drawBoardBtn').onclick = () => { setStage(4); $('status').textContent = 'Drag the board rectangle on the photo.'; };
     $('finishBoard').onclick = () => {
       if (!marks.some(m => m.kind === 'board')) syncBoardFromInputs();
       setStage(5);
@@ -1059,7 +1059,7 @@
     };
 
     $('addUsbPreset').onclick = () => {
-      if (stage < 4) { $('status').textContent = 'Спочатку завершіть калібрування.'; return; }
+      if (stage < 4) { $('status').textContent = 'First finish calibration.'; return; }
       const type = $('usbPreset').value;
       const size = type === 'usb_a' ? [14, 7] : [9, 4];
       const radMm = type === 'usb_c' ? 2.0 : 0;
@@ -1074,7 +1074,7 @@
       renderMarksList();
       renderPropertiesPanel();
       redraw();
-      $('status').textContent = `Додано пресет ${type === 'usb_a' ? 'USB Type-A' : 'USB Type-C'} [${face}]. Перетягніть його або скоригуйте зазор у панелі.`;
+      $('status').textContent = `Added preset ${type === 'usb_a' ? 'USB Type-A' : 'USB Type-C'} [${face}]. Drag it or adjust clearance in the panel.`;
     };
 
     $('finish').onclick = () => {
@@ -1082,11 +1082,11 @@
         const face = $('face') ? $('face').value : 'front';
         const clr = +$('elementClearance').value || 0.4;
         addMark({ type: 'polygon', points: points.splice(0), kind: $('kind').value, face, clearance: clr });
-        $('status').textContent = 'Полігон додано. Зазор та координати доступні у панелі властивостей.';
+        $('status').textContent = 'Polygon added. Clearance and coordinates are available in the properties panel.';
         renderMarksList();
         renderPropertiesPanel();
         redraw();
-      } else $('status').textContent = 'Для полігона потрібно щонайменше три точки.';
+      } else $('status').textContent = 'A polygon needs at least three points.';
     };
 
     function buildBoardJson() {
@@ -1189,7 +1189,7 @@
 
     $('saveServerBtn').onclick = async () => {
       const { cleanId, out } = buildBoardJson();
-      $('status').textContent = `Збереження "${cleanId}" на сервері...`;
+      $('status').textContent = `Saving "${cleanId}" to server...`;
 
       try {
         let resp;
@@ -1211,14 +1211,14 @@
 
         const data = await resp.json();
         if (resp.ok && data.status === 'ok') {
-          $('status').textContent = `✓ Успішно збережено "${cleanId}"! OpenSCAD пресети оновлено.`;
+          $('status').textContent = `✓ Successfully saved "${cleanId}"! OpenSCAD presets updated.`;
           await fetchServerBoards();
           $('serverBoardSelect').value = cleanId;
         } else {
-          $('status').textContent = `⚠ Помилка при збереженні: ${data.detail || data.message || 'Невідома помилка'}`;
+          $('status').textContent = `⚠ Save error: ${data.detail || data.message || 'Unknown error'}`;
         }
       } catch (err) {
-        $('status').textContent = `⚠ Не вдалося зв'язатися з сервером (${err.message}). Використовуйте локальний експорт JSON.`;
+        $('status').textContent = `⚠ Could not connect to server (${err.message}). Use local JSON export.`;
       }
     };
 
@@ -1382,12 +1382,12 @@
       renderMarksList();
       renderPropertiesPanel();
       redraw();
-      $('status').textContent = `Завантажено плату "${boardData.name || boardData.id}". Усі контури та зазори доступні для редагування.`;
+      $('status').textContent = `Board loaded "${boardData.name || boardData.id}". All contours and clearances are available for editing.`;
     }
 
     async function loadServerBoard(boardId) {
       if (!boardId) return;
-      $('status').textContent = `Завантаження плати "${boardId}" з сервера...`;
+      $('status').textContent = `Loading board "${boardId}" from server...`;
       try {
         const resp = await fetch(`/api/boards/${boardId}`);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -1419,7 +1419,7 @@
           hydrateBoard(boardData);
         }
       } catch (err) {
-        $('status').textContent = `Помилка завантаження плати з сервера: ${err.message}`;
+        $('status').textContent = `Error loading board from server: ${err.message}`;
       }
     }
 
@@ -1429,7 +1429,7 @@
         if (!resp.ok) throw new Error('Offline');
         const list = await resp.json();
         
-        $('serverStatusBadge').textContent = 'Сервер активний';
+        $('serverStatusBadge').textContent = 'Server active';
         $('serverStatusBadge').className = 'server-badge';
 
         const select = $('serverBoardSelect');
@@ -1438,19 +1438,19 @@
 
         const optDefault = document.createElement('option');
         optDefault.value = '';
-        optDefault.textContent = `-- Оберіть плату (${list.length} доступно) --`;
+        optDefault.textContent = `-- Select board (${list.length} available) --`;
         select.append(optDefault);
 
         list.forEach(b => {
           const opt = document.createElement('option');
           opt.value = b.id;
-          opt.textContent = `${b.name} (${b.width}×${b.height || b.length} мм)${b.has_image ? ' 📷' : ''}`;
+          opt.textContent = `${b.name} (${b.width}×${b.height || b.length} mm)${b.has_image ? ' 📷' : ''}`;
           select.append(opt);
         });
 
         if (prevVal) select.value = prevVal;
       } catch (e) {
-        $('serverStatusBadge').textContent = 'Локальний режим';
+        $('serverStatusBadge').textContent = 'Offline mode';
         $('serverStatusBadge').className = 'server-badge offline';
       }
     }
@@ -1475,7 +1475,7 @@
         renderMarksList();
         renderPropertiesPanel();
         redraw();
-        $('status').textContent = 'Виділення знято. Тепер можна додати нову фігуру.';
+        $('status').textContent = 'Selection cleared. You can now add a new figure.';
       };
     }
 
@@ -1486,7 +1486,7 @@
         renderMarksList();
         renderPropertiesPanel();
         redraw();
-        $('status').textContent = 'Виділення знято.';
+        $('status').textContent = 'Selection cleared.';
       } else if (e.key === 'Delete' || e.key === 'Backspace') {
         if (selectedMarkId) {
           marks = marks.filter(m => m.id !== selectedMarkId);
@@ -1494,7 +1494,7 @@
           renderMarksList();
           renderPropertiesPanel();
           redraw();
-          $('status').textContent = 'Виділений об’єкт видалено.';
+          $('status').textContent = 'Selected object deleted.';
         }
       }
     });
