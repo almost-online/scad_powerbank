@@ -47,12 +47,15 @@ case_corner_radius = 4.0;
 // Додатковий поздовжній простір у кишеньці плати для паяння дротів (40-60 мм).
 wire_soldering_space = 20.0;
 
-// Параметри горизонтальних пазів для фіксації плати (вбудовані в корпус):
-// Два горизонтальні прорізи в бічних стінках, вздовж осі Z, на відстані 6мм від передньої стінки.
-enable_board_holders = true;        // true = увімкнути пази для фіксації плати
+// Параметри бічних тримачів плати (вбудовані в корпус):
+// Два блоки-тримачі з вертикальним пазом (вздовж Z) для фіксації плати.
+// Плата разом з передньою панеллю та перегородкою заходить вздовж осі Z.
+enable_board_holders = true;        // true = вбудовані тримачі по краях відсіку плати
 board_thickness = 1.1;             // Товщина плати PCB (мм)
-board_holder_slot_depth = 1.5;    // Глибина прорізу в бічну стінку (мм)
-board_holder_slot_offset = 6.0;   // Відстань від передньої стінки до прорізу (мм)
+board_holder_thick = 1.2;          // Товщина тримача (мм)
+board_holder_width = 4.0;          // Ширина тримача вздовж Y (мм)
+board_holder_slot_depth = 1.5;    // Глибина вертикального пазу (мм)
+board_holder_slot_offset = 6.0;   // Відстань від передньої стінки до пазу (мм)
 
 // Параметри внутрішньої перегородки (кишеньки плати).
 enable_partition = true;
@@ -202,11 +205,28 @@ module vent_pattern_2d(w, h, type="slots") {
     }
 }
 
-// Горизонтальні пази для фіксації плати в бічних стінках
-// Плата ковзає по осі Y, фіксуючись у пазах по ширині
-board_slot_y = wall_thick + board_holder_slot_offset;
-board_slot_w = board_thickness + tolerance;  // Ширина пазу для вільного входження плати
-board_start_x = wall_thick + (inner_x - board_width) / 2;  // Лівий край плати
+module board_holder(side) {
+    // Бічний тримач плати з вертикальним пазом (вздовж Z)
+    // side: "left" або "right"
+    // Паз розташований на відстані board_holder_slot_offset від передньої стінки
+    holder_len = board_holder_width;
+    holder_x = (side == "left") 
+        ? wall_thick + (inner_x - board_width) / 2 - board_holder_thick 
+        : wall_thick + (inner_x - board_width) / 2 + board_width;
+    holder_y = wall_thick + board_holder_slot_offset;
+    holder_z = wall_thick;
+    
+    difference() {
+        // Основний блок тримача, що йде від дна вгору на всю висоту
+        translate([holder_x, holder_y, holder_z])
+            cube([board_holder_thick, holder_len, inner_z]);
+        
+        // Вертикальний паз (вздовж Z) для вільного входження плати
+        slot_w = board_thickness + tolerance;
+        translate([holder_x - 0.05, holder_y, holder_z + inner_z / 2 - slot_w / 2])
+            cube([board_holder_thick + 0.1, holder_len + 0.1, slot_w]);
+    }
+}
 
 module powerbank_body() {
     union() {
@@ -357,15 +377,10 @@ module powerbank_body() {
         }
         }
         
-        // Горизонтальні пази для фіксації плати в бічних стінках
+        // Бічні тримачі плати з вертикальним пазом (вбудовані в корпус)
         if (enable_board_holders) {
-            // Лівий горизонтальний паз (вріз у ліву стінку, вздовж осі Z)
-            translate([wall_thick - board_holder_slot_depth, board_slot_y, wall_thick])
-                cube([board_holder_slot_depth + 0.1, board_slot_w, inner_z + 1]);
-            
-            // Правий горизонтальний паз (вріз у праву стінку, вздовж осі Z)
-            translate([board_start_x + board_width - 0.1, board_slot_y, wall_thick])
-                cube([board_holder_slot_depth + 0.1, board_slot_w, inner_z + 1]);
+            board_holder("left");
+            board_holder("right");
         }
     }
 }
