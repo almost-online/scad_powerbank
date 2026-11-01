@@ -1,0 +1,121 @@
+{
+  "id": "abkn_pd45w_3s",
+  "name": "ABKN DIY Charging Module PD45W 3S (UFCS_PD45W)",
+  "units": "mm",
+  "board": {
+    "width": 60,
+    "length": 18,
+    "height": 26,
+    "radius": 5
+  },
+  "ports": [
+    {
+      "id": "usb_a_top",
+      "type": "usb_a",
+      "face": "front",
+      "edge": "front",
+      "offset": 2.5,
+      "x": 2.5,
+      "y": 15.7,
+      "width": 14,
+      "height": 7,
+      "radius": 0,
+      "clearance": 0.35
+    },
+    {
+      "id": "usb_a_bottom",
+      "type": "usb_a",
+      "face": "front",
+      "edge": "front",
+      "offset": 2.5,
+      "x": 2.5,
+      "y": 4.8,
+      "width": 14,
+      "height": 7,
+      "radius": 0,
+      "clearance": 0.35
+    },
+    {
+      "id": "usb_c_top",
+      "type": "usb_c",
+      "face": "front",
+      "edge": "front",
+      "offset": 21.49,
+      "x": 21.49,
+      "y": 16.3,
+      "width": 9,
+      "height": 4,
+      "radius": 2,
+      "clearance": 0.5
+    },
+    {
+      "id": "usb_c_bottom",
+      "type": "usb_c",
+      "face": "front",
+      "edge": "front",
+      "offset": 21.2,
+      "x": 21.2,
+      "y": 6.24,
+      "width": 9,
+      "height": 4,
+      "radius": 2,
+      "clearance": 0.5
+    }
+  ],
+  "displays": [
+    {
+      "id": "display",
+      "face": "front",
+      "shape": "polygon",
+      "points": [
+        [
+          32.44,
+          24.07
+        ],
+        [
+          48.7,
+          24.07
+        ],
+        [
+          48.7,
+          15.93
+        ],
+        [
+          47.34,
+          15.93
+        ],
+        [
+          47.34,
+          0.61
+        ],
+        [
+          33.9,
+          0.61
+        ],
+        [
+          33.9,
+          16.02
+        ],
+        [
+          32.54,
+          16.02
+        ]
+      ],
+      "clearance": 0.4
+    }
+  ],
+  "buttons": [
+    {
+      "id": "button",
+      "face": "front",
+      "x": 52.8,
+      "y": 12.83,
+      "diameter": 4.76,
+      "clearance": 0.4
+    }
+  ],
+  "indicators": [],
+  "holes": [],
+  "has_image": true,
+  "image_url": "/api/boards/abkn_pd45w_3s/image"
+}

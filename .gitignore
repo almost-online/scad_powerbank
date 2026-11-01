@@ -1,0 +1,28 @@
+# Generated 3D models (large binaries)
+*.stl
+
+# Junie agent session artifacts
+.junie/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Generated SCAD presets (auto-generated from boards/*.json)
+generated_board_presets.scad

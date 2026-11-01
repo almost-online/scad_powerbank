@@ -1,0 +1,1507 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PowerBank Board Sketcher & Preset Editor</title>
+  <style>
+    body { font: 14px/1.4 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 16px; background: #f8fafc; color: #1e293b; }
+    h2 { margin: 0; font-size: 20px; color: #0f172a; }
+    
+    #topHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    #serverControls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .server-badge {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .server-badge.offline {
+      background: #f1f5f9;
+      color: #64748b;
+      border-color: #cbd5e1;
+    }
+    
+    #stepsContainer {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 1080px) {
+      #stepsContainer {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      #stepsContainer {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .step-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .step-card.active {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+
+    #cardStep5 {
+      grid-column: 1 / -1;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .step-header {
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #0369a1;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-bottom: 2px;
+    }
+
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      background: #f1f5f9;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+
+    input[type="text"], input[type="number"], select {
+      padding: 3px 6px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    input[type="number"] { width: 60px; }
+    input[type="text"] { width: 140px; }
+
+    button {
+      padding: 5px 10px;
+      font-size: 13px;
+      background: #e2e8f0;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+    button:hover:not(:disabled) {
+      background: #cbd5e1;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    button.primary {
+      background: #0284c7;
+      color: white;
+      border-color: #0369a1;
+    }
+    button.primary:hover:not(:disabled) {
+      background: #0369a1;
+    }
+    button.success {
+      background: #16a34a;
+      color: white;
+      border-color: #15803d;
+    }
+    button.success:hover:not(:disabled) {
+      background: #15803d;
+    }
+    button.server-btn {
+      background: #4f46e5;
+      color: white;
+      border-color: #4338ca;
+    }
+    button.server-btn:hover:not(:disabled) {
+      background: #4338ca;
+    }
+
+    #infoBar {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    #status { font-weight: 500; color: #0369a1; }
+    #measurement { color: #475569; font-family: ui-monospace, monospace; font-size: 13px; }
+
+    #workspace { display: flex; align-items: flex-start; gap: 14px; }
+    #canvasWrapper { position: relative; max-width: 100%; overflow: auto; }
+    canvas { background: #e2e8f0; border: 1px solid #94a3b8; border-radius: 6px; cursor: crosshair; touch-action: none; display: block; }
+    
+    #sidePanel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 320px;
+      min-width: 320px;
+    }
+
+    .panel-box {
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .panel-box h3 { margin: 0 0 8px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
+    
+    #marksList { display: flex; flex-direction: column; gap: 5px; max-height: 240px; overflow-y: auto; }
+    .markItem { display: flex; align-items: center; gap: 5px; padding: 6px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; cursor: pointer; user-select: none; transition: background 0.15s, border-color 0.15s; }
+    .markItem:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    .markItem.selected { background: #eff6ff; border-color: #3b82f6; color: #1d4ed8; font-weight: 500; box-shadow: 0 0 0 1px #3b82f6; }
+    .markName { flex: 1; cursor: pointer; }
+    .deleteMark { padding: 2px 6px; color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; border-radius: 3px; cursor: pointer; font-size: 11px; }
+    .deleteMark:hover { background: #fee2e2; }
+
+    #propsContent {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .prop-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .prop-row label {
+      flex: 1;
+      justify-content: space-between;
+      padding: 3px 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="topHeader">
+    <div>
+      <h2>PowerBank Board Sketcher</h2>
+      <span style="font-size: 12px; color: #64748b;">Візуальний редактор плат та автоматичний генератор OpenSCAD пресетів</span>
+    </div>
+    <div id="serverControls">
+      <span id="serverStatusBadge" class="server-badge">Сервер активний</span>
+      <select id="serverBoardSelect">
+        <option value="">-- Оберіть плату з сервера --</option>
+      </select>
+      <button id="loadServerBoardBtn" class="primary" type="button">Завантажити</button>
+      <button id="refreshServerBoardsBtn" type="button" title="Оновити список пресетів">↻</button>
+      <button id="saveServerBtn" class="server-btn" type="button" style="font-weight: 600;">💾 Зберегти на сервер</button>
+    </div>
+  </div>
+
+  <div id="stepsContainer">
+    <!-- Крок 1 -->
+    <div class="step-card" id="cardStep1">
+      <div class="step-header">Крок 1: Фото плати</div>
+      <div class="controls-row">
+        <label>Файл: <input id="image" type="file" accept="image/*"></label>
+      </div>
+      <div class="controls-row" style="font-size: 11px; color: #64748b;">
+        Або виберіть готову плату в меню зверху.
+      </div>
+    </div>
+
+    <!-- Крок 2 -->
+    <div class="step-card" id="cardStep2">
+      <div class="step-header">Крок 2: Вирівнювання</div>
+      <div class="controls-row">
+        <label>Кут, ° <input id="rotation" type="number" value="0" step="0.1"></label>
+        <button id="rotateLeft" type="button" title="Повернути проти годинникової">↶ −0.1°</button>
+        <button id="rotateRight" type="button" title="Повернути за годинниковою">↷ +0.1°</button>
+      </div>
+      <div class="controls-row">
+        <button id="finishAlignment" class="primary" type="button">Підтвердити вирівнювання</button>
+      </div>
+    </div>
+
+    <!-- Крок 3 -->
+    <div class="step-card" id="cardStep3">
+      <div class="step-header">Крок 3: Калібрування масштабу</div>
+      <div class="controls-row">
+        <label>Еталон, мм <input id="known" type="number" value="60"></label>
+        <button id="finishCalibration" class="primary" type="button">Завершити калібрування</button>
+      </div>
+    </div>
+
+    <!-- Крок 4 -->
+    <div class="step-card" id="cardStep4">
+      <div class="step-header">Крок 4: Розміри та назва плати</div>
+      <div class="controls-row">
+        <label>ID / назва: <input id="boardName" type="text" value="custom_board" placeholder="abkn_pd45w_3s"></label>
+      </div>
+      <div class="controls-row">
+        <label>W <input id="boardWidth" type="number" value="60" title="Ширина плати, мм"> мм</label>
+        <label>L <input id="boardLength" type="number" value="18" title="Довжина плати, мм"> мм</label>
+        <label>H <input id="boardHeight" type="number" value="26" title="Висота плати, мм"> мм</label>
+      </div>
+      <div class="controls-row">
+        <label>Радіус кутів, мм <input id="boardRadius" type="number" value="5" min="0" step="0.1"></label>
+      </div>
+      <div class="controls-row">
+        <button id="drawBoardBtn" type="button" title="Накреслити контур плати">Накреслити прямокутник</button>
+        <button id="finishBoard" class="primary" type="button">Підтвердити плату (Крок 5)</button>
+      </div>
+    </div>
+
+    <!-- Крок 5 -->
+    <div class="step-card" id="cardStep5">
+      <div class="step-header">Крок 5: Розмітка компонентів та генерація вирізів</div>
+      <div class="controls-row">
+        <label>Грань (Face):
+          <select id="face">
+            <option value="front">Front (Передня грань / порти)</option>
+            <option value="top">Top (Верхня грань / кришка)</option>
+            <option value="side">Side (Бічна грань)</option>
+          </select>
+        </label>
+        <label>Тип об'єкта:
+          <select id="kind">
+            <option value="hole">отвір (виріз)</option>
+            <option value="display">дисплей</option>
+            <option value="button">кнопка</option>
+            <option value="indicator">індикатор</option>
+          </select>
+        </label>
+        <label>Форма:
+          <select id="tool">
+            <option value="rectangle">прямокутник</option>
+            <option value="circle">коло</option>
+            <option value="polygon">полігон</option>
+          </select>
+        </label>
+        <label>Радіус, мм <input id="rectRadius" type="number" value="0" min="0" step="0.1"></label>
+        <label>Clearance, мм <input id="elementClearance" type="number" value="0.4" min="0" step="0.05"></label>
+        <label><input id="orthogonalPolygon" type="checkbox"> Полігон: тільки 90° (H/V)</label>
+        <button id="finish" type="button">Завершити полігон</button>
+      </div>
+      <div class="controls-row" style="margin-top: 4px; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
+        <label>Стандартні порти:
+          <select id="usbPreset">
+            <option value="usb_a">USB Type-A (14×7 мм, r=0, clr=0.35)</option>
+            <option value="usb_c">USB Type-C (9×4 мм, r=2 мм, clr=0.5)</option>
+          </select>
+        </label>
+        <button id="addUsbPreset" type="button">Додати порт</button>
+        <div style="flex: 1;"></div>
+        <label>Файл експорту: <input id="boardNameExport" type="text" value="custom_board" placeholder="custom_board"></label>
+        <button id="export" class="success" type="button" style="font-weight: 600;">📥 Експорт JSON файлу</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="infoBar">
+    <div id="status">Завантажте фото або оберіть плату зі списку сервера.</div>
+    <div id="measurement" aria-live="polite">Координати курсора: —</div>
+  </div>
+
+  <div id="workspace">
+    <div id="canvasWrapper">
+      <canvas id="canvas" width="900" height="600"></canvas>
+    </div>
+    
+    <aside id="sidePanel">
+      <div class="panel-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <h3>Позначені об’єкти</h3>
+          <button id="clearSelectionBtn" type="button" style="padding:2px 8px; font-size:11px;" title="Зняти виділення фігури">Зняти виділення</button>
+        </div>
+        <div id="marksList">Поки що немає об’єктів.</div>
+      </div>
+
+      <div class="panel-box" id="propsPanel">
+        <h3>Властивості виділеного елемента</h3>
+        <div id="propsContent">
+          <div style="color: #64748b; font-size: 12px;">Виберіть елемент на полотні або зі списку.</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+    let image = null, scale = 1, marks = [], points = [], calibration = null, cursorPoint = null, drawing = null, hoveredMarkId = null, selectedMarkId = null, nextMarkId = 1, editing = null;
+    let stage = 1, rotation = 0, alignment = { horizontal: null, vertical: null, dragging: null };
+    let currentBoardId = null;
+    let activeImageFile = null;
+
+    const $ = id => document.getElementById(id);
+
+    function markLabel(m) {
+      if (m.kind === 'board') return `Плата [${m.w ? (m.w / scale).toFixed(1) : 0} × ${m.h ? (m.h / scale).toFixed(1) : 0} мм]`;
+      const clr = m.clearance != null ? `, clr=${m.clearance}мм` : '';
+      return `${m.kind}${m.face ? ' [' + m.face + ']' : ''} — ${m.type}${m.type === 'rectangle' && m.radius ? `, r=${(m.radius / scale).toFixed(1)} мм` : ''}${clr}`;
+    }
+
+    function addMark(mark) {
+      mark.id = nextMarkId++;
+      if (mark.clearance == null && mark.kind !== 'board') {
+        mark.clearance = +$('elementClearance').value || 0.4;
+      }
+      marks.push(mark);
+      selectedMarkId = mark.id;
+      renderPropertiesPanel();
+      return mark;
+    }
+
+    function distance(a, b) { return Math.hypot(b[0] - a[0], b[1] - a[1]); }
+    function formatMeasurement(value) { return `${(value / scale).toFixed(2)} мм`; }
+
+    function pointInPolygon(point, vs) {
+      if (!vs || vs.length < 3) return false;
+      const x = point[0], y = point[1];
+      let inside = false;
+      for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        const xi = vs[i][0], yi = vs[i][1];
+        const xj = vs[j][0], yj = vs[j][1];
+        const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    function roundedRectPath(context, x, y, w, h, radius) {
+      const left = Math.min(x, x + w), top = Math.min(y, y + h);
+      const width = Math.abs(w), height = Math.abs(h);
+      const r = Math.min(Math.max(0, radius || 0), width / 2, height / 2);
+      context.beginPath();
+      if (!r) { context.rect(left, top, width, height); return; }
+      context.moveTo(left + r, top);
+      context.arcTo(left + width, top, left + width, top + height, r);
+      context.arcTo(left + width, top + height, left, top + height, r);
+      context.arcTo(left, top + height, left, top, r);
+      context.arcTo(left, top + width, top, r);
+      context.closePath();
+    }
+
+    function updateActiveCard() {
+      for (let i = 1; i <= 5; i++) {
+        const card = $(`cardStep${i}`);
+        if (card) {
+          if (stage === i) card.classList.add('active');
+          else card.classList.remove('active');
+        }
+      }
+    }
+
+    function setStage(value) {
+      stage = value;
+      updateActiveCard();
+      $('finishAlignment').disabled = stage !== 2;
+      $('finishCalibration').disabled = stage !== 3;
+      $('finishBoard').disabled = stage !== 4;
+      if (stage === 1) {
+        $('status').textContent = 'Крок 1: Завантажте фото плати або виберіть готову плату зі списку сервера.';
+      } else if (stage === 2) {
+        $('status').textContent = 'Крок 2: Вирівняйте горизонтальні та вертикальні лінії за еталонними краями плати.';
+      } else if (stage === 3) {
+        $('status').textContent = 'Крок 3: Вкажіть довжину еталона та проведіть калібрувальну лінію.';
+      } else if (stage === 4) {
+        $('status').textContent = 'Крок 4: Намалюйте прямокутник плати на фото або скоригуйте розміри/радіус, потім натисніть «Підтвердити плату».';
+      } else if (stage === 5) {
+        $('status').textContent = 'Крок 5: Розмітьте отвори, дисплеї, кнопки, індикатори або додайте USB-порти та збережіть на сервер.';
+      }
+    }
+
+    function rotatedPoint(point, inverse = false) {
+      const a = (inverse ? -rotation : rotation) * Math.PI / 180;
+      const c = [canvas.width / 2, canvas.height / 2], x = point[0] - c[0], y = point[1] - c[1];
+      return [x * Math.cos(a) - y * Math.sin(a) + c[0], x * Math.sin(a) + y * Math.cos(a) + c[1]];
+    }
+
+    function snapCalibrationPoint(point) {
+      if (!calibration || !calibration.length) return point;
+      const start = calibration[0];
+      return Math.abs(point[0] - start[0]) >= Math.abs(point[1] - start[1]) ? [point[0], start[1]] : [start[0], point[1]];
+    }
+
+    function updateMeasurement(point) {
+      const cursor = `Координати курсора: (${(point[0] / scale).toFixed(2)}, ${(point[1] / scale).toFixed(2)}) мм`;
+      let detail = '';
+      if (calibration && calibration.length === 1) detail = `; довжина лінії: ${formatMeasurement(distance(calibration[0], snapCalibrationPoint(point)))}`;
+      if (calibration && calibration.length === 2) detail = `; довжина лінії: ${formatMeasurement(distance(calibration[0], calibration[1]))}`;
+      if (drawing) {
+        if (drawing.tool === 'rectangle') detail = `; довжина: ${formatMeasurement(Math.abs(point[0] - drawing.x))}, ширина: ${formatMeasurement(Math.abs(point[1] - drawing.y))}`;
+        if (drawing.tool === 'circle') detail = `; радіус: ${formatMeasurement(distance([drawing.x, drawing.y], point))}`;
+      }
+      $('measurement').textContent = cursor + detail;
+    }
+
+    function renderPropertiesPanel() {
+      const panel = $('propsContent');
+      panel.replaceChildren();
+      const m = marks.find(mark => mark.id === selectedMarkId);
+      if (!m) {
+        panel.innerHTML = '<div style="color: #64748b; font-size: 12px;">Виберіть елемент на полотні або зі списку.</div>';
+        return;
+      }
+
+      const boardMark = marks.find(b => b.kind === 'board' && b.type === 'rectangle');
+      const bx = boardMark ? boardMark.x : 0;
+      const by = boardMark ? boardMark.y : 0;
+      const bh = boardMark ? boardMark.h : canvas.height;
+
+      const container = document.createElement('div');
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+      container.style.gap = '6px';
+
+      // Type / Kind
+      const rowKind = document.createElement('div');
+      rowKind.className = 'prop-row';
+      rowKind.innerHTML = `
+        <label>Тип:
+          <select id="propKind">
+            <option value="board">плата (board)</option>
+            <option value="usb_a">USB Type-A</option>
+            <option value="usb_c">USB Type-C</option>
+            <option value="display">дисплей</option>
+            <option value="button">кнопка</option>
+            <option value="indicator">індикатор</option>
+            <option value="hole">виріз (hole)</option>
+          </select>
+        </label>
+        <label>Грань:
+          <select id="propFace">
+            <option value="front">Front</option>
+            <option value="top">Top</option>
+            <option value="side">Side</option>
+          </select>
+        </label>
+      `;
+      container.append(rowKind);
+
+      // Coordinates & Dimensions
+      const rowCoords = document.createElement('div');
+      rowCoords.className = 'prop-row';
+
+      let xMm = 0, yOrZMm = 0, wMm = 0, hMm = 0, rMm = 0;
+      if (m.type === 'circle') {
+        xMm = +((m.x - bx) / scale).toFixed(2);
+        yOrZMm = m.face === 'front' ? +((by + bh - m.y) / scale).toFixed(2) : +((m.y - by) / scale).toFixed(2);
+        rMm = +((m.r * 2) / scale).toFixed(2); // diameter
+      } else if (m.type === 'rectangle') {
+        xMm = +((m.x - bx) / scale).toFixed(2);
+        yOrZMm = m.face === 'front' ? +((by + bh - (m.y + m.h)) / scale).toFixed(2) : +((m.y - by) / scale).toFixed(2);
+        wMm = +(m.w / scale).toFixed(2);
+        hMm = +(m.h / scale).toFixed(2);
+        rMm = +((m.radius || 0) / scale).toFixed(2);
+      }
+
+      if (m.type === 'circle') {
+        rowCoords.innerHTML = `
+          <label>X, мм <input id="propX" type="number" step="0.1" value="${xMm}"></label>
+          <label>Y, мм <input id="propY" type="number" step="0.1" value="${yOrZMm}"></label>
+          <label>Ø, мм <input id="propDia" type="number" step="0.1" value="${rMm}"></label>
+        `;
+      } else if (m.type === 'rectangle') {
+        rowCoords.innerHTML = `
+          <label>X, мм <input id="propX" type="number" step="0.1" value="${xMm}"></label>
+          <label>Y, мм <input id="propY" type="number" step="0.1" value="${yOrZMm}"></label>
+          <label>W, мм <input id="propW" type="number" step="0.1" value="${wMm}"></label>
+          <label>H, мм <input id="propH" type="number" step="0.1" value="${hMm}"></label>
+          <label>r, мм <input id="propR" type="number" step="0.1" value="${rMm}"></label>
+        `;
+      }
+      container.append(rowCoords);
+
+      // Clearance & Actions
+      const rowClearance = document.createElement('div');
+      rowClearance.className = 'prop-row';
+      rowClearance.innerHTML = `
+        <label>Зазор (clearance), мм <input id="propClearance" type="number" step="0.05" min="0" value="${m.clearance != null ? m.clearance : 0.4}"></label>
+        <button id="propDeleteBtn" class="deleteMark" type="button" style="padding: 4px 10px; font-size: 12px;">Видалити</button>
+      `;
+      container.append(rowClearance);
+
+      panel.append(container);
+
+      // Hydrate values into inputs
+      $('propKind').value = m.kind || 'hole';
+      $('propFace').value = m.face || 'front';
+
+      // Event Listeners for Live Editing
+      $('propKind').onchange = () => { m.kind = $('propKind').value; renderMarksList(); redraw(); };
+      $('propFace').onchange = () => { m.face = $('propFace').value; renderMarksList(); redraw(); };
+      $('propClearance').oninput = () => { m.clearance = +$('propClearance').value || 0; renderMarksList(); redraw(); };
+      $('propDeleteBtn').onclick = () => {
+        marks = marks.filter(mark => mark.id !== m.id);
+        selectedMarkId = null;
+        renderMarksList();
+        renderPropertiesPanel();
+        redraw();
+      };
+
+      if ($('propX')) {
+        $('propX').oninput = () => {
+          const val = +$('propX').value * scale;
+          m.x = bx + val;
+          redraw();
+        };
+      }
+      if ($('propY')) {
+        $('propY').oninput = () => {
+          const val = +$('propY').value * scale;
+          if (m.type === 'circle') {
+            m.y = m.face === 'front' ? (by + bh - val) : (by + val);
+          } else {
+            m.y = m.face === 'front' ? (by + bh - val - m.h) : (by + val);
+          }
+          redraw();
+        };
+      }
+      if ($('propW')) {
+        $('propW').oninput = () => {
+          m.w = +$('propW').value * scale;
+          redraw();
+        };
+      }
+      if ($('propH')) {
+        $('propH').oninput = () => {
+          m.h = +$('propH').value * scale;
+          redraw();
+        };
+      }
+      if ($('propR')) {
+        $('propR').oninput = () => {
+          m.radius = +$('propR').value * scale;
+          redraw();
+        };
+      }
+      if ($('propDia')) {
+        $('propDia').oninput = () => {
+          m.r = (+$('propDia').value * scale) / 2;
+          redraw();
+        };
+      }
+    }
+
+    function renderMarksList() {
+      const list = $('marksList');
+      list.replaceChildren();
+      if (!marks.length) { list.textContent = 'Поки що немає об’єктів.'; return; }
+      marks.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'markItem' + (m.id === selectedMarkId ? ' selected' : '');
+        item.dataset.markId = m.id;
+        const name = document.createElement('span');
+        name.className = 'markName';
+        name.textContent = `${m.id}. ${markLabel(m)}`;
+        const remove = document.createElement('button');
+        remove.className = 'deleteMark';
+        remove.type = 'button';
+        remove.textContent = 'Видалити';
+        remove.onclick = (e) => {
+          e.stopPropagation();
+          marks = marks.filter(mark => mark.id !== m.id);
+          if (selectedMarkId === m.id) selectedMarkId = null;
+          if (hoveredMarkId === m.id) hoveredMarkId = null;
+          renderMarksList();
+          renderPropertiesPanel();
+          redraw();
+        };
+        item.onclick = () => {
+          if (selectedMarkId === m.id) {
+            selectedMarkId = null;
+            $('status').textContent = 'Виділення знято. Тепер можна додати нову фігуру.';
+          } else {
+            selectedMarkId = m.id;
+            $('status').textContent = `Вибрано «${m.id}. ${m.kind}». Перетягуйте мишкою по полотну або редагуйте у панелі властивостей.`;
+          }
+          renderMarksList();
+          renderPropertiesPanel();
+          redraw();
+        };
+        item.onmouseenter = () => { hoveredMarkId = m.id; redraw(); };
+        item.onmouseleave = () => { if (hoveredMarkId === m.id) { hoveredMarkId = null; redraw(); } };
+        item.append(name, remove);
+        list.append(item);
+      });
+    }
+
+    function redraw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (image) {
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(rotation * Math.PI / 180);
+        ctx.drawImage(image, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
+        ctx.restore();
+      }
+      if (stage === 2) {
+        ctx.save();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#7c3aed';
+        ctx.setLineDash([10, 6]);
+        ctx.beginPath(); ctx.moveTo(0, alignment.horizontal); ctx.lineTo(canvas.width, alignment.horizontal); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(alignment.vertical, 0); ctx.lineTo(alignment.vertical, canvas.height); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = '#7c3aed'; ctx.fillText('перетягніть лінії для вирівнювання', 12, 20); ctx.restore();
+      }
+      canvas.style.cursor = (stage === 4 || stage === 5) && selectedMarkId ? 'move' : 'crosshair';
+      marks.forEach(m => {
+        const isSelected = m.id === selectedMarkId;
+        const isHovered = m.id === hoveredMarkId;
+        const isBoard = m.kind === 'board';
+        ctx.lineWidth = isSelected ? 3.5 : isHovered ? 3 : isBoard ? 2.5 : 2;
+        ctx.strokeStyle = isSelected ? '#2563eb' : isHovered ? '#e00000' : isBoard ? '#16a34a' : '#00aaff';
+        ctx.fillStyle = isSelected ? 'rgba(37,99,235,.28)' : isHovered ? 'rgba(224,0,0,.24)' : isBoard ? 'rgba(22,163,74,.12)' : 'rgba(0,170,255,.18)';
+        if (m.type === 'circle') {
+          ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+          if (isSelected || isHovered) {
+            ctx.beginPath(); ctx.arc(m.x + m.r, m.y, 5, 0, Math.PI*2);
+            ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = isSelected ? '#2563eb' : '#e00000'; ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(m.x - 4, m.y); ctx.lineTo(m.x + 4, m.y); ctx.moveTo(m.x, m.y - 4); ctx.lineTo(m.x, m.y + 4); ctx.stroke();
+          }
+        }
+        else if (m.type === 'polygon') {
+          ctx.beginPath(); ctx.moveTo(m.points[0][0], m.points[0][1]); m.points.slice(1).forEach(p => ctx.lineTo(p[0], p[1])); ctx.closePath();
+          ctx.fill(); ctx.stroke();
+          if (isSelected || isHovered) {
+            m.points.forEach(p => {
+              ctx.beginPath(); ctx.arc(p[0], p[1], 5, 0, Math.PI*2);
+              ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = isSelected ? '#2563eb' : '#e00000'; ctx.stroke();
+            });
+          }
+        }
+        else {
+          roundedRectPath(ctx, m.x, m.y, m.w, m.h, m.radius);
+          ctx.fill(); ctx.stroke();
+          if (isSelected || isHovered) {
+            [[m.x,m.y],[m.x+m.w,m.y],[m.x+m.w,m.y+m.h],[m.x,m.y+m.h]].forEach(p => {
+              ctx.beginPath(); ctx.arc(p[0],p[1],5,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill(); ctx.strokeStyle = isSelected ? '#2563eb' : '#e00000'; ctx.stroke();
+            });
+          }
+        }
+      });
+      if (calibration && calibration.length) {
+        ctx.beginPath(); ctx.setLineDash([8, 5]); ctx.lineWidth = 3; ctx.strokeStyle = '#ff8c00';
+        ctx.moveTo(calibration[0][0], calibration[0][1]);
+        if (calibration.length > 1) ctx.lineTo(calibration[1][0], calibration[1][1]);
+        else if (cursorPoint) { const preview = snapCalibrationPoint(cursorPoint); ctx.lineTo(preview[0], preview[1]); }
+        ctx.stroke(); ctx.setLineDash([]);
+        calibration.forEach(p => { ctx.beginPath(); ctx.fillStyle = '#ff8c00'; ctx.arc(p[0], p[1], 5, 0, Math.PI * 2); ctx.fill(); });
+      }
+      if (points.length) { ctx.beginPath(); ctx.moveTo(points[0][0], points[0][1]); points.slice(1).forEach(p => ctx.lineTo(p[0], p[1])); if (cursorPoint && $('tool').value === 'polygon') { const preview = polygonPoint(cursorPoint); ctx.lineTo(preview[0], preview[1]); } ctx.stroke(); }
+      if (drawing) {
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = drawing.isBoard ? '#16a34a' : '#00aaff';
+        ctx.fillStyle = drawing.isBoard ? 'rgba(22,163,74,.18)' : 'rgba(0,170,255,.18)';
+        if (drawing.tool === 'circle') { ctx.beginPath(); ctx.arc(drawing.x, drawing.y, drawing.r, 0, Math.PI*2); }
+        else roundedRectPath(ctx, drawing.x, drawing.y, drawing.w, drawing.h, drawing.radius);
+        ctx.fill(); ctx.stroke();
+      }
+    }
+
+    $('image').onchange = e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      activeImageFile = f;
+      image = new Image();
+      image.onload = () => {
+        canvas.width = Math.min(1200, image.width);
+        canvas.height = image.height * canvas.width / image.width;
+        alignment.horizontal = canvas.height / 2;
+        alignment.vertical = canvas.width / 2;
+        rotation = 0;
+        $('rotation').value = 0;
+        setStage(2);
+        redraw();
+        $('status').textContent='Перетягніть лінії на краї плати, поверніть фото за потреби та підтвердьте вирівнювання.';
+      };
+      image.src = URL.createObjectURL(f);
+    };
+
+    function canvasPoint(e) {
+      const r = canvas.getBoundingClientRect();
+      return [(e.clientX - r.left) * canvas.width / r.width, (e.clientY - r.top) * canvas.height / r.height];
+    }
+
+    function polygonPoint(point) {
+      if (!$('orthogonalPolygon').checked || !points.length) return point;
+      const last = points[points.length - 1];
+      return Math.abs(point[0] - last[0]) >= Math.abs(point[1] - last[1]) ? [point[0], last[1]] : [last[0], point[1]];
+    }
+
+    function hitMark(point) {
+      return marks.slice().reverse().find(m => {
+        if (m.type === 'circle') {
+          return distance([m.x, m.y], point) <= Math.max(m.r, 8);
+        }
+        if (m.type === 'polygon') {
+          return pointInPolygon(point, m.points) || m.points.some(p => distance(p, point) < 10);
+        }
+        const minX = Math.min(m.x, m.x + m.w) - 3;
+        const maxX = Math.max(m.x, m.x + m.w) + 3;
+        const minY = Math.min(m.y, m.y + m.h) - 3;
+        const maxY = Math.max(m.y, m.y + m.h) + 3;
+        return point[0] >= minX && point[0] <= maxX && point[1] >= minY && point[1] <= maxY;
+      });
+    }
+
+    function hitHandle(point, m) {
+      if (!m) return -1;
+      if (m.type === 'circle') {
+        const handle = [m.x + m.r, m.y];
+        return distance(handle, point) < 10 ? 0 : -1;
+      }
+      if (m.type === 'polygon') {
+        return m.points.findIndex(p => distance(p, point) < 10);
+      }
+      const handles = [[m.x, m.y], [m.x + m.w, m.y], [m.x + m.w, m.y + m.h], [m.x, m.y + m.h]];
+      return handles.findIndex(p => distance(p, point) < 10);
+    }
+
+    function finishDrag(e) {
+      if (!drawing) return;
+      const [x,y] = canvasPoint(e);
+      const sx = drawing.x, sy = drawing.y;
+      if (drawing.tool === 'rectangle' && Math.abs(x - sx) > 0 && Math.abs(y - sy) > 0) {
+        const w = Math.abs(x - sx), h = Math.abs(y - sy);
+        if (stage === 4 || drawing.isBoard) {
+          marks = marks.filter(m => m.kind !== 'board');
+          const rad = Math.min(+$('boardRadius').value * scale || 0, w / 2, h / 2);
+          addMark({ type: 'rectangle', kind: 'board', x: Math.min(sx, x), y: Math.min(sy, y), w, h, radius: rad });
+          $('boardWidth').value = +(w / scale).toFixed(2);
+          $('boardLength').value = +(h / scale).toFixed(2);
+          $('status').textContent = `Контур плати позначено: ${(w / scale).toFixed(2)} × ${(h / scale).toFixed(2)} мм. За потреби скоригуйте кути або перейдіть до Кроку 5.`;
+        } else {
+          const rad = Math.min(+$('rectRadius').value * scale || 0, w / 2, h / 2);
+          const face = $('face') ? $('face').value : 'front';
+          const clr = +$('elementClearance').value || 0.4;
+          addMark({ type: 'rectangle', kind: $('kind').value, face, x: Math.min(sx, x), y: Math.min(sy, y), w, h, radius: rad, clearance: clr });
+          $('status').textContent = `Фігуру [${$('kind').value}] додано. Редагуйте координати та зазор у панелі праворуч.`;
+        }
+      }
+      if (drawing.tool === 'circle' && drawing.r > 0) {
+        const face = $('face') ? $('face').value : 'front';
+        const clr = +$('elementClearance').value || 0.4;
+        addMark({ type: 'circle', kind: $('kind').value, face, x: sx, y: sy, r: Math.hypot(x - sx, y - sy), clearance: clr });
+        $('status').textContent = `Коло [${$('kind').value}] додано.`;
+      }
+      drawing = null;
+      canvas.releasePointerCapture?.(e.pointerId);
+      renderMarksList();
+      renderPropertiesPanel();
+      redraw();
+    }
+
+    canvas.onpointerdown = e => {
+      if (e.button !== 0) return;
+      const point = canvasPoint(e);
+      cursorPoint = point;
+      if (stage === 2) {
+        const dh = Math.abs(point[1] - alignment.horizontal), dv = Math.abs(point[0] - alignment.vertical);
+        alignment.dragging = dh < 12 && dh <= dv ? 'horizontal' : dv < 12 ? 'vertical' : null;
+        canvas.setPointerCapture?.(e.pointerId);
+        redraw();
+        return;
+      }
+      if (stage < 3) return;
+      const [x, y] = point;
+      if (stage === 3) {
+        const p = snapCalibrationPoint([x, y]);
+        calibration = calibration && calibration.length < 2 ? calibration.concat([p]) : [p];
+        if (calibration.length === 2) {
+          const known = +$('known').value, measured = distance(calibration[0], calibration[1]);
+          if (known > 0 && measured > 0) {
+            scale = measured / known;
+            $('status').textContent = `Масштаб відкалібровано: ${scale.toFixed(2)} px/мм. Натисніть «Завершити калібрування».`;
+          } else {
+            calibration = [];
+            $('status').textContent = 'Введіть додатну міру та виберіть два різні кінці відрізка.';
+          }
+        }
+        updateMeasurement([x, y]);
+        redraw();
+        return;
+      }
+      if (stage === 4) {
+        const mark = hitMark([x, y]);
+        const handle = mark && hitHandle([x, y], mark);
+        if (mark) {
+          selectedMarkId = mark.id;
+          editing = { mark, mode: handle >= 0 ? 'resize' : 'move', handle, start: [x, y], original: { x: mark.x, y: mark.y, w: mark.w, h: mark.h } };
+          canvas.setPointerCapture?.(e.pointerId);
+          renderMarksList();
+          renderPropertiesPanel();
+          redraw();
+        } else {
+          selectedMarkId = null;
+          drawing = { tool: 'rectangle', isBoard: true, x, y, r: 0, w: 0, h: 0, radius: Math.min(+$('boardRadius').value * scale || 0, 0) };
+          updateMeasurement([x, y]);
+          canvas.setPointerCapture?.(e.pointerId);
+          renderMarksList();
+          renderPropertiesPanel();
+          redraw();
+        }
+        return;
+      }
+
+      // Stage 5:
+      const selectedMark = selectedMarkId ? marks.find(m => m.id === selectedMarkId) : null;
+      if (selectedMark) {
+        const otherMark = hitMark([x, y]);
+        const targetMark = (otherMark && otherMark.kind !== 'board') ? otherMark : selectedMark;
+        selectedMarkId = targetMark.id;
+        const handle = hitHandle([x, y], targetMark);
+        
+        let orig;
+        if (targetMark.type === 'polygon') orig = { points: targetMark.points.map(p => [...p]) };
+        else if (targetMark.type === 'circle') orig = { x: targetMark.x, y: targetMark.y, r: targetMark.r };
+        else orig = { x: targetMark.x, y: targetMark.y, w: targetMark.w, h: targetMark.h };
+
+        editing = { mark: targetMark, mode: handle >= 0 ? 'resize' : 'move', handle, start: [x, y], original: orig };
+        canvas.setPointerCapture?.(e.pointerId);
+        renderMarksList();
+        renderPropertiesPanel();
+        redraw();
+        return;
+      }
+
+      const mark = hitMark([x, y]);
+      if (mark && mark.kind !== 'board') {
+        selectedMarkId = mark.id;
+        const handle = hitHandle([x, y], mark);
+        let orig;
+        if (mark.type === 'polygon') orig = { points: mark.points.map(p => [...p]) };
+        else if (mark.type === 'circle') orig = { x: mark.x, y: mark.y, r: mark.r };
+        else orig = { x: mark.x, y: mark.y, w: mark.w, h: mark.h };
+
+        editing = { mark, mode: handle >= 0 ? 'resize' : 'move', handle, start: [x, y], original: orig };
+        canvas.setPointerCapture?.(e.pointerId);
+        renderMarksList();
+        renderPropertiesPanel();
+        redraw();
+        return;
+      }
+
+      // Draw new component
+      if ($('tool').value === 'polygon') {
+        points.push(polygonPoint([x, y]));
+        redraw();
+      } else {
+        const rad = Math.min(+$('rectRadius').value * scale || 0, 0);
+        drawing = { tool: $('tool').value, isBoard: false, x, y, r: 0, w: 0, h: 0, radius: rad };
+        updateMeasurement([x, y]);
+        canvas.setPointerCapture?.(e.pointerId);
+      }
+    };
+
+    canvas.onpointermove = e => {
+      const point = canvasPoint(e);
+      cursorPoint = point;
+      updateMeasurement(point);
+
+      if (stage === 2 && alignment.dragging) {
+        if (alignment.dragging === 'horizontal') alignment.horizontal = Math.max(0, Math.min(canvas.height, point[1]));
+        if (alignment.dragging === 'vertical') alignment.vertical = Math.max(0, Math.min(canvas.width, point[0]));
+        redraw();
+        return;
+      }
+
+      if (editing) {
+        const [dx, dy] = [point[0] - editing.start[0], point[1] - editing.start[1]];
+        const m = editing.mark;
+        if (editing.mode === 'move') {
+          if (m.type === 'polygon') {
+            m.points = editing.original.points.map(p => [p[0] + dx, p[1] + dy]);
+          } else if (m.type === 'circle') {
+            m.x = editing.original.x + dx;
+            m.y = editing.original.y + dy;
+          } else {
+            m.x = editing.original.x + dx;
+            m.y = editing.original.y + dy;
+          }
+        } else if (editing.mode === 'resize') {
+          if (m.type === 'circle') {
+            m.r = Math.max(3, distance([m.x, m.y], point));
+          } else if (m.type === 'polygon') {
+            m.points[editing.handle] = [point[0], point[1]];
+          } else {
+            const orig = editing.original;
+            if (editing.handle === 0) { m.x = orig.x + dx; m.y = orig.y + dy; m.w = orig.w - dx; m.h = orig.h - dy; }
+            else if (editing.handle === 1) { m.y = orig.y + dy; m.w = orig.w + dx; m.h = orig.h - dy; }
+            else if (editing.handle === 2) { m.w = orig.w + dx; m.h = orig.h + dy; }
+            else if (editing.handle === 3) { m.x = orig.x + dx; m.w = orig.w - dx; m.h = orig.h + dy; }
+          }
+        }
+        renderPropertiesPanel();
+        redraw();
+        return;
+      }
+
+      if (drawing) {
+        if (drawing.tool === 'circle') drawing.r = distance([drawing.x, drawing.y], point);
+        else { drawing.w = point[0] - drawing.x; drawing.h = point[1] - drawing.y; }
+        redraw();
+      }
+    };
+
+    canvas.onpointerup = e => {
+      if (stage === 2 && alignment.dragging) {
+        alignment.dragging = null;
+        canvas.releasePointerCapture?.(e.pointerId);
+        redraw();
+        return;
+      }
+      if (editing) {
+        const m = editing.mark;
+        if (m.type === 'rectangle') {
+          if (m.w < 0) { m.x += m.w; m.w = Math.abs(m.w); }
+          if (m.h < 0) { m.y += m.h; m.h = Math.abs(m.h); }
+          if (m.kind === 'board') {
+            $('boardWidth').value = +(m.w / scale).toFixed(2);
+            $('boardLength').value = +(m.h / scale).toFixed(2);
+          }
+        }
+        editing = null;
+        canvas.releasePointerCapture?.(e.pointerId);
+        renderMarksList();
+        renderPropertiesPanel();
+        redraw();
+        return;
+      }
+      finishDrag(e);
+    };
+
+    function syncBoardFromInputs() {
+      const w = +$('boardWidth').value * scale;
+      const h = +$('boardLength').value * scale;
+      const rad = Math.min(+$('boardRadius').value * scale || 0, w / 2, h / 2);
+      let board = marks.find(m => m.kind === 'board' && m.type === 'rectangle');
+      if (board) {
+        board.w = w; board.h = h; board.radius = rad;
+      } else {
+        const bx = (canvas.width - w) / 2;
+        const by = (canvas.height - h) / 2;
+        addMark({ type: 'rectangle', kind: 'board', x: bx, y: by, w, h, radius: rad });
+      }
+      renderMarksList();
+      renderPropertiesPanel();
+      redraw();
+    }
+
+    $('rotation').oninput = () => { rotation = +$('rotation').value || 0; redraw(); };
+    $('rotateLeft').onclick = () => { rotation -= 0.1; $('rotation').value = +rotation.toFixed(2); redraw(); };
+    $('rotateRight').onclick = () => { rotation += 0.1; $('rotation').value = +rotation.toFixed(2); redraw(); };
+    $('finishAlignment').onclick = () => { setStage(3); $('status').textContent = 'Вирівнювання застосовано. Введіть довжину еталона та проведіть лінію.'; };
+    $('finishCalibration').onclick = () => {
+      if (!calibration || calibration.length < 2) { $('status').textContent = 'Спочатку поставте 2 точки калібрувальної лінії.'; return; }
+      setStage(4);
+      syncBoardFromInputs();
+    };
+
+    $('boardWidth').oninput = () => { syncBoardFromInputs(); };
+    $('boardLength').oninput = () => { syncBoardFromInputs(); };
+    $('boardRadius').oninput = () => { syncBoardFromInputs(); };
+    $('drawBoardBtn').onclick = () => { setStage(4); $('status').textContent = 'Протягніть прямокутник плати на фото.'; };
+    $('finishBoard').onclick = () => {
+      if (!marks.some(m => m.kind === 'board')) syncBoardFromInputs();
+      setStage(5);
+      redraw();
+    };
+
+    $('addUsbPreset').onclick = () => {
+      if (stage < 4) { $('status').textContent = 'Спочатку завершіть калібрування.'; return; }
+      const type = $('usbPreset').value;
+      const size = type === 'usb_a' ? [14, 7] : [9, 4];
+      const radMm = type === 'usb_c' ? 2.0 : 0;
+      const clr = type === 'usb_c' ? 0.5 : 0.35;
+      const face = $('face') ? $('face').value : 'front';
+      const board = marks.find(m => m.kind === 'board' && m.type === 'rectangle');
+      const w = size[0] * scale, h = size[1] * scale;
+      const x = board ? board.x + board.w / 2 - w / 2 : canvas.width / 2 - w / 2;
+      const y = board ? board.y + board.h / 2 - h / 2 : canvas.height / 2 - h / 2;
+      const radius = Math.min(radMm * scale, w / 2, h / 2);
+      addMark({ type: 'rectangle', kind: type, face, x, y, w, h, radius, clearance: clr });
+      renderMarksList();
+      renderPropertiesPanel();
+      redraw();
+      $('status').textContent = `Додано пресет ${type === 'usb_a' ? 'USB Type-A' : 'USB Type-C'} [${face}]. Перетягніть його або скоригуйте зазор у панелі.`;
+    };
+
+    $('finish').onclick = () => {
+      if (points.length >= 3) {
+        const face = $('face') ? $('face').value : 'front';
+        const clr = +$('elementClearance').value || 0.4;
+        addMark({ type: 'polygon', points: points.splice(0), kind: $('kind').value, face, clearance: clr });
+        $('status').textContent = 'Полігон додано. Зазор та координати доступні у панелі властивостей.';
+        renderMarksList();
+        renderPropertiesPanel();
+        redraw();
+      } else $('status').textContent = 'Для полігона потрібно щонайменше три точки.';
+    };
+
+    function buildBoardJson() {
+      const mm = p => p / scale;
+      const boardMark = marks.find(m => m.kind === 'board' && m.type === 'rectangle');
+      const boardRad = boardMark ? +mm(boardMark.radius || 0).toFixed(2) : +$('boardRadius').value || 0;
+      const rawName = (($('boardNameExport')?.value || $('boardName')?.value || '').trim()) || 'custom_board';
+      const cleanId = rawName.replace(/\.json$/i, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'custom_board';
+      const bx = boardMark ? boardMark.x : 0;
+      const by = boardMark ? boardMark.y : 0;
+      const bh = boardMark ? boardMark.h : (+$('boardHeight').value || +$('boardLength').value) * scale;
+      const boardHeightMm = +$('boardHeight').value || 26;
+
+      const out = {
+        id: cleanId,
+        name: rawName,
+        units: 'mm',
+        board: {
+          width: boardMark ? +mm(boardMark.w).toFixed(2) : +$('boardWidth').value,
+          length: +$('boardLength').value,
+          height: boardHeightMm,
+          radius: boardRad
+        },
+        ports: [],
+        displays: [],
+        buttons: [],
+        indicators: [],
+        holes: []
+      };
+
+      marks.forEach(m => {
+        if (m.kind === 'board') return;
+        const target = m.kind === 'hole' ? out.holes : ['usb_a', 'usb_c'].includes(m.kind) ? out.ports : m.kind === 'display' ? out.displays : m.kind === 'button' ? out.buttons : out.indicators;
+        const face = m.face || 'front';
+        const clr = m.clearance != null ? +m.clearance : 0.4;
+
+        if (m.type === 'polygon') {
+          target.push({
+            id: m.kind,
+            face: face,
+            shape: 'polygon',
+            points: m.points.map(p => {
+              const px = +mm(p[0] - bx).toFixed(2);
+              const pyOrPz = face === 'front' ? +mm(by + bh - p[1]).toFixed(2) : +mm(p[1] - by).toFixed(2);
+              return [px, pyOrPz];
+            }),
+            clearance: clr
+          });
+        } else if (m.type === 'circle') {
+          const itemX = +mm(m.x - bx).toFixed(2);
+          const itemYOrZ = face === 'front' ? +mm(by + bh - m.y).toFixed(2) : +mm(m.y - by).toFixed(2);
+          const circleObj = {
+            id: m.kind,
+            face: face,
+            x: itemX,
+            diameter: +mm(m.r * 2).toFixed(2),
+            clearance: clr
+          };
+          circleObj.y = itemYOrZ;
+          target.push(circleObj);
+        } else {
+          const itemX = +mm(m.x - bx).toFixed(2);
+          const rectW = +mm(Math.abs(m.w)).toFixed(2);
+          const rectH = +mm(Math.abs(m.h)).toFixed(2);
+          const itemYOrZ = face === 'front' ? +mm(by + bh - (m.y + m.h)).toFixed(2) : +mm(m.y - by).toFixed(2);
+
+          const rectObj = {
+            id: m.kind,
+            type: ['usb_a', 'usb_c'].includes(m.kind) ? m.kind : undefined,
+            face: face,
+            edge: face,
+            x: itemX,
+            offset: itemX,
+            width: rectW,
+            radius: +mm(m.radius || 0).toFixed(2),
+            clearance: clr
+          };
+          if (face === 'front') {
+            rectObj.y = itemYOrZ;
+            rectObj.height = rectH;
+          } else {
+            rectObj.y = itemYOrZ;
+            rectObj.length = rectH;
+          }
+          target.push(rectObj);
+        }
+      });
+
+      return { cleanId, out };
+    }
+
+    $('export').onclick = () => {
+      const { cleanId, out } = buildBoardJson();
+      const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = cleanId + '.json';
+      a.click();
+    };
+
+    $('saveServerBtn').onclick = async () => {
+      const { cleanId, out } = buildBoardJson();
+      $('status').textContent = `Збереження "${cleanId}" на сервері...`;
+
+      try {
+        let resp;
+        if (activeImageFile) {
+          const formData = new FormData();
+          formData.append('board_data', JSON.stringify(out));
+          formData.append('image', activeImageFile);
+          resp = await fetch(`/api/boards/${cleanId}`, {
+            method: 'POST',
+            body: formData
+          });
+        } else {
+          resp = await fetch(`/api/boards/${cleanId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(out)
+          });
+        }
+
+        const data = await resp.json();
+        if (resp.ok && data.status === 'ok') {
+          $('status').textContent = `✓ Успішно збережено "${cleanId}"! OpenSCAD пресети оновлено.`;
+          await fetchServerBoards();
+          $('serverBoardSelect').value = cleanId;
+        } else {
+          $('status').textContent = `⚠ Помилка при збереженні: ${data.detail || data.message || 'Невідома помилка'}`;
+        }
+      } catch (err) {
+        $('status').textContent = `⚠ Не вдалося зв'язатися з сервером (${err.message}). Використовуйте локальний експорт JSON.`;
+      }
+    };
+
+    function hydrateBoard(boardData) {
+      marks = [];
+      points = [];
+      nextMarkId = 1;
+      selectedMarkId = null;
+
+      currentBoardId = boardData.id;
+      $('boardName').value = boardData.name || boardData.id;
+      $('boardNameExport').value = boardData.id;
+      
+      const bDim = boardData.board || {};
+      $('boardWidth').value = bDim.width || 60;
+      $('boardLength').value = bDim.length || 18;
+      $('boardHeight').value = bDim.height || 26;
+      $('boardRadius').value = bDim.radius || 0;
+
+      // Calculate board coordinates
+      const bWidthMm = bDim.width || 60;
+      const bHeightMm = bDim.height || bDim.length || 26;
+      
+      const bw = bWidthMm * scale;
+      const bh = bHeightMm * scale;
+      const bx = (canvas.width - bw) / 2;
+      const by = (canvas.height - bh) / 2;
+      const rad = (bDim.radius || 0) * scale;
+
+      addMark({ type: 'rectangle', kind: 'board', x: bx, y: by, w: bw, h: bh, radius: rad });
+
+      // Hydrate ports
+      (boardData.ports || []).forEach(p => {
+        const pType = p.type || p.id || 'usb_a';
+        const pFace = p.face || p.edge || 'front';
+        const pX = (p.x != null ? p.x : p.offset || 0) * scale;
+        const pY = (p.y != null ? p.y : p.offset_y || 0) * scale;
+        const pW = (p.width || (pType === 'usb_c' ? 9 : 14)) * scale;
+        const pH = (p.height || p.length || (pType === 'usb_c' ? 4 : 7)) * scale;
+        const pRad = (p.radius || (pType === 'usb_c' ? 2 : 0)) * scale;
+        const pClr = p.clearance != null ? p.clearance : (pType === 'usb_c' ? 0.5 : 0.35);
+
+        const canvasX = bx + pX;
+        const canvasY = pFace === 'front' ? (by + bh - pY - pH) : (by + pY);
+
+        addMark({
+          type: 'rectangle',
+          kind: pType,
+          face: pFace,
+          x: canvasX,
+          y: canvasY,
+          w: pW,
+          h: pH,
+          radius: pRad,
+          clearance: pClr
+        });
+      });
+
+      // Hydrate displays
+      (boardData.displays || []).forEach(d => {
+        const dFace = d.face || 'front';
+        const dClr = d.clearance != null ? d.clearance : 0.4;
+        if (d.shape === 'polygon' && d.points) {
+          const polyPoints = d.points.map(([px, pyOrPz]) => {
+            const canvasX = bx + px * scale;
+            const canvasY = dFace === 'front' ? (by + bh - pyOrPz * scale) : (by + pyOrPz * scale);
+            return [canvasX, canvasY];
+          });
+          addMark({
+            type: 'polygon',
+            kind: 'display',
+            face: dFace,
+            points: polyPoints,
+            clearance: dClr
+          });
+        } else {
+          const dX = (d.x || 0) * scale;
+          const dY = (d.y || d.z || 0) * scale;
+          const dW = (d.width || 20) * scale;
+          const dH = (d.height || d.length || 10) * scale;
+          const dRad = (d.radius || 0) * scale;
+          const canvasX = bx + dX;
+          const canvasY = dFace === 'front' ? (by + bh - dY - dH) : (by + dY);
+          addMark({
+            type: 'rectangle',
+            kind: 'display',
+            face: dFace,
+            x: canvasX,
+            y: canvasY,
+            w: dW,
+            h: dH,
+            radius: dRad,
+            clearance: dClr
+          });
+        }
+      });
+
+      // Hydrate buttons
+      (boardData.buttons || []).forEach(b => {
+        const bFace = b.face || 'front';
+        const bClr = b.clearance != null ? b.clearance : 0.4;
+        const bX = (b.x || 0) * scale;
+        const bY = (b.y != null ? b.y : b.z || 0) * scale;
+        const bDia = (b.diameter || 6) * scale;
+        const canvasX = bx + bX;
+        const canvasY = bFace === 'front' ? (by + bh - bY) : (by + bY);
+        addMark({
+          type: 'circle',
+          kind: 'button',
+          face: bFace,
+          x: canvasX,
+          y: canvasY,
+          r: bDia / 2,
+          clearance: bClr
+        });
+      });
+
+      // Hydrate indicators
+      (boardData.indicators || []).forEach(ind => {
+        const indFace = ind.face || 'front';
+        const indClr = ind.clearance != null ? ind.clearance : 0.4;
+        const indX = (ind.x || 0) * scale;
+        const indY = (ind.y != null ? ind.y : ind.z || 0) * scale;
+        const indDia = (ind.diameter || 3) * scale;
+        const canvasX = bx + indX;
+        const canvasY = indFace === 'front' ? (by + bh - indY) : (by + indY);
+        addMark({
+          type: 'circle',
+          kind: 'indicator',
+          face: indFace,
+          x: canvasX,
+          y: canvasY,
+          r: indDia / 2,
+          clearance: indClr
+        });
+      });
+
+      // Hydrate holes
+      (boardData.holes || []).forEach(h => {
+        const hFace = h.face || 'front';
+        const hClr = h.clearance != null ? h.clearance : 0.4;
+        if (h.diameter) {
+          const hX = (h.x || 0) * scale;
+          const hY = (h.y != null ? h.y : h.z || 0) * scale;
+          const hDia = h.diameter * scale;
+          const canvasX = bx + hX;
+          const canvasY = hFace === 'front' ? (by + bh - hY) : (by + hY);
+          addMark({
+            type: 'circle',
+            kind: 'hole',
+            face: hFace,
+            x: canvasX,
+            y: canvasY,
+            r: hDia / 2,
+            clearance: hClr
+          });
+        }
+      });
+
+      setStage(5);
+      renderMarksList();
+      renderPropertiesPanel();
+      redraw();
+      $('status').textContent = `Завантажено плату "${boardData.name || boardData.id}". Усі контури та зазори доступні для редагування.`;
+    }
+
+    async function loadServerBoard(boardId) {
+      if (!boardId) return;
+      $('status').textContent = `Завантаження плати "${boardId}" з сервера...`;
+      try {
+        const resp = await fetch(`/api/boards/${boardId}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const boardData = await resp.json();
+
+        // If board has an image, load it first
+        if (boardData.has_image && boardData.image_url) {
+          const img = new Image();
+          img.onload = () => {
+            image = img;
+            canvas.width = Math.min(1200, img.width);
+            canvas.height = img.height * canvas.width / img.width;
+            
+            // Set scale based on board width and image proportion
+            const bWidth = boardData.board?.width || 60;
+            scale = (canvas.width * 0.85) / bWidth;
+            $('known').value = bWidth;
+
+            hydrateBoard(boardData);
+          };
+          img.onerror = () => {
+            scale = 12;
+            hydrateBoard(boardData);
+          };
+          img.src = boardData.image_url;
+        } else {
+          image = null;
+          scale = 12;
+          hydrateBoard(boardData);
+        }
+      } catch (err) {
+        $('status').textContent = `Помилка завантаження плати з сервера: ${err.message}`;
+      }
+    }
+
+    async function fetchServerBoards() {
+      try {
+        const resp = await fetch('/api/boards');
+        if (!resp.ok) throw new Error('Offline');
+        const list = await resp.json();
+        
+        $('serverStatusBadge').textContent = 'Сервер активний';
+        $('serverStatusBadge').className = 'server-badge';
+
+        const select = $('serverBoardSelect');
+        const prevVal = select.value;
+        select.replaceChildren();
+
+        const optDefault = document.createElement('option');
+        optDefault.value = '';
+        optDefault.textContent = `-- Оберіть плату (${list.length} доступно) --`;
+        select.append(optDefault);
+
+        list.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.id;
+          opt.textContent = `${b.name} (${b.width}×${b.height || b.length} мм)${b.has_image ? ' 📷' : ''}`;
+          select.append(opt);
+        });
+
+        if (prevVal) select.value = prevVal;
+      } catch (e) {
+        $('serverStatusBadge').textContent = 'Локальний режим';
+        $('serverStatusBadge').className = 'server-badge offline';
+      }
+    }
+
+    $('loadServerBoardBtn').onclick = () => {
+      const id = $('serverBoardSelect').value;
+      if (id) loadServerBoard(id);
+    };
+
+    $('serverBoardSelect').onchange = () => {
+      const id = $('serverBoardSelect').value;
+      if (id) loadServerBoard(id);
+    };
+
+    $('refreshServerBoardsBtn').onclick = () => {
+      fetchServerBoards();
+    };
+
+    if ($('clearSelectionBtn')) {
+      $('clearSelectionBtn').onclick = () => {
+        selectedMarkId = null;
+        renderMarksList();
+        renderPropertiesPanel();
+        redraw();
+        $('status').textContent = 'Виділення знято. Тепер можна додати нову фігуру.';
+      };
+    }
+
+    window.addEventListener('keydown', e => {
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+      if (e.key === 'Escape') {
+        selectedMarkId = null;
+        renderMarksList();
+        renderPropertiesPanel();
+        redraw();
+        $('status').textContent = 'Виділення знято.';
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedMarkId) {
+          marks = marks.filter(m => m.id !== selectedMarkId);
+          selectedMarkId = null;
+          renderMarksList();
+          renderPropertiesPanel();
+          redraw();
+          $('status').textContent = 'Виділений об’єкт видалено.';
+        }
+      }
+    });
+
+    setStage(1);
+    redraw();
+    fetchServerBoards();
+  </script>
+</body>
+</html>
