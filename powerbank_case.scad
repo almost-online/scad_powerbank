@@ -27,7 +27,7 @@ pack_series = 3;
 pack_parallel = 1;
 
 // Товщина стінок корпуса та загальний монтажний зазор.
-wall_thick = 2.0;
+wall_thick = 3.0;
 tolerance = 0.6;
 
 // Відстань між сусідніми елементами батареї (зазор для проходження повітря та охолодження).
@@ -53,7 +53,7 @@ wire_soldering_space = 20.0;
 enable_board_holders = true;        // true = вбудовані тримачі по краях відсіку плати
 board_thickness = 1.1;             // Товщина плати PCB (мм)
 board_holder_thick = 1.2;          // Товщина тримача (мм)
-board_holder_width = 4.0;          // Ширина тримача вздовж Y (мм)
+board_holder_width = wire_soldering_space;          // Ширина тримача вздовж Y (мм)
 board_holder_slot_depth = 1.5;    // Глибина вертикального пазу (мм)
 board_holder_slot_offset = 6.0;   // Відстань від передньої стінки до пазу (мм)
 
@@ -69,7 +69,7 @@ show_partition = true;             // Відображати перегород�
 
 // Параметри вентиляційних решіток (пасивне конвекційне охолодження).
 enable_ventilation = true;
-vent_type = "slots"; // "slots" (поздовжні прорізи) або "hex" (стільники/гексагони)
+vent_type = "hex"; // "slots" (поздовжні прорізи) або "hex" (стільники/гексагони)
 vent_slot_w = 2.0;
 vent_slot_spacing = 2.5;
 vent_hex_radius = 2.2;
@@ -121,7 +121,7 @@ board_width = board[0];
 board_length = board[1];
 board_height = board[2];
 
-board_pocket_length = board_length + wire_soldering_space + tolerance * 2;
+board_pocket_length = wire_soldering_space + tolerance * 2;
 
 part_thick = enable_partition ? partition_thick : 0;
 
@@ -206,25 +206,46 @@ module vent_pattern_2d(w, h, type="slots") {
 }
 
 module board_holder(side) {
-    // Бічний тримач плати з вертикальним пазом (вздовж Z)
+    // Бічний тримач плати з пазом для фіксації
     // side: "left" або "right"
-    // Паз розташований на відстані board_holder_slot_offset від передньої стінки
-    holder_len = board_holder_width;
+    // Тримач розташований на відстані board_holder_slot_offset від передньої стінки
+    // Паз має ширину board_holder_thick (1.2мм) та глибину board_holder_slot_depth (1.5мм)
+    holder_len = board_holder_width + tolerance/2;
     holder_x = (side == "left") 
-        ? wall_thick + (inner_x - board_width) / 2 - board_holder_thick 
+        ? wall_thick 
         : wall_thick + (inner_x - board_width) / 2 + board_width;
-    holder_y = wall_thick + board_holder_slot_offset;
+    holder_y = front_panel_thick + tolerance;
     holder_z = wall_thick;
+    holder_width = (inner_x - board_width) / 2;
+    holder_height = part_panel_h;
     
     difference() {
         // Основний блок тримача, що йде від дна вгору на всю висоту
         translate([holder_x, holder_y, holder_z])
-            cube([board_holder_thick, holder_len, inner_z]);
+            cube([holder_width, holder_len, holder_height]);
         
-        // Вертикальний паз (вздовж Z) для вільного входження плати
-        slot_w = board_thickness + tolerance;
-        translate([holder_x - 0.05, holder_y, holder_z + inner_z / 2 - slot_w / 2])
-            cube([board_holder_thick + 0.1, holder_len + 0.1, slot_w]);
+        // Паз для плати, що врізається в тримач на глибину board_holder_slot_depth
+        // від внутрішнього краю до стінки, центрований по висоті
+        slot_w = board_holder_thick;  // Ширина пазу 1.2мм
+        slot_center_z = holder_z + inner_z / 2;
+        slot_start_z = slot_center_z - slot_w / 2;
+        
+        // Глибина пазу від внутрішнього краю тримача до стінки
+        if (side == "left") {
+            // Лівий тримач: паз йде від внутрішнього краю (holder_x + board_holder_thick) 
+            // вліво на board_holder_slot_depth
+            translate([holder_x + board_holder_thick, 
+                       board_holder_slot_offset + holder_y - 0.05, 
+                       holder_z])
+                cube([board_holder_slot_depth + 0.1, slot_w + 0.1, holder_height]);
+        } else {
+            // Правий тримач: паз йде від внутрішнього краю (holder_x) 
+            // вправо на board_holder_slot_depth
+            translate([holder_x - 0.05, 
+                       board_holder_slot_offset + holder_y - 0.05, 
+                       holder_z])
+                cube([board_holder_slot_depth + 0.1, slot_w + 0.1, holder_height]);
+        }
     }
 }
 
