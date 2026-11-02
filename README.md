@@ -103,16 +103,16 @@ The model uses front-to-back sequential stacking:
    * **Lid fixation:** the transverse protrusion on the inner side of the lid presses the top edge of the partition when closed, preventing rattling or displacement.
    * With `enable_modular_partition = false`, a monolithic wall `partition_thick` is generated.
 3. **Battery compartment (behind the partition, along $Y$):**
-   * **18650 (cylindrical):** arranged in the $XY$ plane ($X = \text{pack\_parallel}$, $Y = \text{pack\_series}$, $Z = 1$). Cylinders are precisely centered at positive coordinates ($+X/2, +Z/2, \text{rotate}([-90,0,0])$).
-   * **Pouch / Prismatic (flat packs):** series-connected packs $\text{pack\_series}$ are stacked vertically along $Z$ with `spacing` gaps for air circulation and cooling, while parallel $\text{pack\_parallel}$ are placed along the width $X$.
+   * **18650 (cylindrical):** arranged in the $XY$ plane ($X = \text{pack\\_parallel}$, $Y = \text{pack\\_series}$, $Z = 1$). Cylinders are precisely centered at positive coordinates ($+X/2, +Z/2, \text{rotate}([-90,0,0])$).
+   * **Pouch / Prismatic (flat packs):** series-connected packs $\text{pack\\_series}$ are stacked vertically along $Z$ with `spacing` gaps for air circulation and cooling, while parallel $\text{pack\\_parallel}$ are placed along the width $X$.
    * **Battery block dimensions:**
-     * $X$ (width): $\text{cells\_x} \times \text{battery\_width} + \max(\text{cells\_x} - 1, 0) \times \text{spacing}$
-     * $Y$ (length): $\text{cells\_y} \times \text{battery\_length} + \max(\text{cells\_y} - 1, 0) \times \text{spacing}$
-     * $Z$ (height): $\text{cells\_z} \times \text{battery\_height} + \max(\text{cells\_z} - 1, 0) \times \text{spacing}$
+     * $X$ (width): $\text{cells\\_x} \times \text{battery\\_width} + \max(\text{cells\\_x} - 1, 0) \times \text{spacing}$
+     * $Y$ (length): $\text{cells\\_y} \times \text{battery\\_length} + \max(\text{cells\\_y} - 1, 0) \times \text{spacing}$
+     * $Z$ (height): $\text{cells\\_z} \times \text{battery\\_height} + \max(\text{cells\\_z} - 1, 0) \times \text{spacing}$
 4. **Total internal space:**
-   * $\text{inner\_x} = \max(\text{pack\_width}, \text{board\_width}) + 2 \times \text{tolerance} + \text{inner\_xy\_margin}$
-   * $\text{inner\_y} = \text{board\_pocket\_length} + \text{part\_thick} + \text{pack\_length} + \text{inner\_xy\_margin}$
-   * $\text{inner\_z} = \max(\text{pack\_height}, \text{board\_height}) + \text{inner\_z\_margin}$
+   * $\text{inner\\_x} = \max(\text{pack\\_width}, \text{board\\_width}) + 2 \times \text{tolerance} + \text{inner\\_xy\\_margin}$
+   * $\text{inner\\_y} = \text{board\\_pocket\\_length} + \text{part\\_thick} + \text{pack\\_length} + \text{inner\\_xy\\_margin}$
+   * $\text{inner\\_z} = \max(\text{pack\\_height}, \text{board\\_height}) + \text{inner\\_z\\_margin}$
 5. **Removable front panel in guide grooves (Modular Slide-in Bezel):**
    * In `enable_modular_front_panel = true` mode, the front wall of the case has a window with U-shaped guide grooves (depth `front_panel_groove_depth = 1.2` mm).
    * The top edge of the grooves remains open, allowing the panel to slide vertically from top to bottom.
