@@ -27,10 +27,10 @@ Parametric 3D model of a powerbank enclosure for OpenSCAD that automatically cal
 2. In the **"MAIN MODEL SETTINGS"** block, select the battery type, board, and block configuration:
 
 ```scad
-battery_type = "18650";          // "18650", "liion_pouch_60x110x12", "lifepo4_pouch", "lifepo4_prismatic"
+battery_type = "liion_pouch_60x110x12"; // "18650", "liion_pouch_60x110x12", "lifepo4_pouch", "lifepo4_prismatic"
 board_type   = "abkn_pd45w_3s";  // "abkn_pd45w_3s", "UFCS_PD45W"
-pack_series   = 2;               // Number of series cells S (for 18650 — along Y; for pouch/prismatic — stack along Z)
-pack_parallel = 2;               // Number of parallel cells P along X (width)
+pack_series   = 3;               // Number of series cells S (for 18650 — along Y; for pouch/prismatic — stack along Z)
+pack_parallel = 1;               // Number of parallel cells P along X (width)
 ```
 
 3. Press **F5** for preview or **F6** for final rendering (CSG combination).
@@ -44,22 +44,23 @@ All key parameters are set at the top of `powerbank_case.scad`:
 
 | Parameter | Default | Description |
 | :--- | :--- | :--- |
-| `battery_type` | `"18650"` | Battery type (`18650`, `liion_pouch_60x110x12`, `lifepo4_pouch`, `lifepo4_prismatic`) |
+| `battery_type` | `"liion_pouch_60x110x12"` | Battery type (`18650`, `liion_pouch_60x110x12`, `lifepo4_pouch`, `lifepo4_prismatic`) |
 | `board_type` | `"abkn_pd45w_3s"` | Board type (`abkn_pd45w_3s`, `UFCS_PD45W`) |
-| `pack_series` | `2` | Number of series cells S (for 18650 — along $Y$; for pouch/prismatic — stack along $Z$) |
-| `pack_parallel` | `2` | Number of parallel cells P (along $X$, width) |
-| `wall_thick` | `2.0` mm | Wall and bottom thickness of the case |
+| `pack_series` | `3` | Number of series cells S (for 18650 — along $Y$; for pouch/prismatic — stack along $Z$) |
+| `pack_parallel` | `1` | Number of parallel cells P (along $X$, width) |
+| `wall_thick` | `3.0` mm | Wall and bottom thickness of the case |
 | `tolerance` | `0.6` mm | Base assembly clearance per side for component fit and lid lock |
 | `spacing_override` | `-1` | Gap between batteries for ventilation (-1: use standard preset) |
 | `inner_xy_margin` | `4` mm | Extra margin along $XY$ (for wires, strips, insulation, BMS board) |
 | `inner_z_margin` | `4` mm | Vertical clearance above the board and batteries |
 | `case_corner_radius` | `4.0` mm | Radius for rounding vertical edges of the case (0 for sharp corners) |
-| `wire_soldering_space` | `45.0` mm | Extra space in the board pocket for convenient wire soldering (40-60 mm) |
+| `wire_soldering_space` | `20.0` mm | Longitudinal length of the board pocket (board + wire soldering space) |
 | `enable_board_holders` | `true` | Built-in side PCB holders with textolite slot |
-| `board_holder_thick` | `1.2` mm | Holder thickness |
-| `board_holder_width` | `4.0` mm | Holder width along Y |
+| `board_thickness` | `1.1` mm | PCB thickness |
+| `board_holder_thick` | `1.2` mm | Width of the PCB slot in the holder |
+| `board_holder_width` | `wire_soldering_space` | Holder length along Y |
 | `board_holder_slot_depth` | `1.5` mm | Slot depth for the PCB |
-| `board_holder_slot_start` | `5.0` mm | Distance from the front panel to the start of the slot |
+| `board_holder_slot_offset` | `6.0` mm | Distance from the front panel to the start of the slot |
 | `enable_partition` | `true` | Enable isolating partition between the board pocket and battery block |
 | `enable_modular_partition` | `true` | Modular removable partition in U-shaped grooves (`false` — monolithic wall) |
 | `partition_thick` | `2.4` mm | Thickness of the protective vertical partition |
@@ -69,13 +70,16 @@ All key parameters are set at the top of `powerbank_case.scad`:
 | `partition_nickel_slot_h` | `1.5` mm | Height/thickness of slots for nickel strips |
 | `show_partition` | `true` | Show partition when `part = "all"` |
 | `enable_ventilation` | `true` | Enable passive convective cooling (grilles) |
-| `vent_type` | `"slots"` | Ventilation shape: `"slots"` (longitudinal cuts) or `"hex"` (honeycomb) |
+| `vent_type` | `"hex"` | Ventilation shape: `"slots"` (longitudinal cuts) or `"hex"` (honeycomb) |
 | `vent_slot_w` | `2.0` mm | Width of linear grille slots |
 | `vent_slot_spacing` | `2.5` mm | Pitch/bridge between ventilation slots |
 | `vent_hex_radius` | `2.2` mm | Radius of the hexagonal honeycomb cell |
+| `vent_hex_wall` | `1.2` mm | Wall thickness between honeycomb cells |
 | `vent_placement` | `"sides"` | Grille placement: `"sides"`, `"bottom"`, `"both"` |
 | `enable_snap_fit` | `true` | Enable reliable mechanical snap-fits for the lid |
 | `snap_ridge_depth` | `0.5` mm | Depth of the snap-fit protrusion for tool-free closure |
+| `snap_ridge_height` | `1.2` mm | Height of the snap-fit ridge |
+| `snap_ridge_len` | `12.0` mm | Length of each snap-fit ridge along Y |
 | `enable_modular_front_panel` | `true` | Modular removable front panel in grooves (`false` — monolithic case) |
 | `front_panel_thick` | `wall_thick` | Thickness of the removable front panel (bezel) |
 | `front_panel_groove_depth` | `1.2` mm | Depth of guide U-grooves in walls and bottom of the case |
@@ -95,8 +99,8 @@ All key parameters are set at the top of `powerbank_case.scad`:
 The model uses front-to-back sequential stacking:
 1. **Control board pocket (front, along $Y$):**
    * Placed directly next to the front panel of the case ($Y \in [0 \dots \text{board\\_pocket\\_length}]$).
-   * Pocket length: $\text{board\\_pocket\\_length} = \text{board\\_length} + \text{wire\\_soldering\\_space} + 2 \times \text{tolerance}$.
-   * Provides $40\dots 60$ mm of free space before the partition for convenient laying and soldering of power and signal wires.
+   * Pocket length: $\text{board\\_pocket\\_length} = \text{wire\\_soldering\\_space} + 2 \times \text{tolerance}$ (`wire_soldering_space` must cover the board plus room for wires).
+   * Side PCB holders span the pocket length and fix the board in a vertical slot located `board_holder_slot_offset` from the front panel.
 2. **Protective vertical partition (Partition Wall):**
    * In `enable_modular_partition = true` mode, the partition is formed as a separate flat plate `partition_panel()` that slides vertically into internal U-shaped grooves of the case (depth `partition_groove_depth = 1.2` mm).
    * Ensures easy flat 3D printing on the bed without supports with perfect accuracy of holes for power wires ($\varnothing 3.5$ mm) and nickel strips ($8.0 \times 1.5$ mm).
