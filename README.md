@@ -94,8 +94,8 @@ All key parameters are set at the top of `powerbank_case.scad`:
 
 The model uses front-to-back sequential stacking:
 1. **Control board pocket (front, along $Y$):**
-   * Placed directly next to the front panel of the case ($Y \in [0 \dots \text{board\_pocket\_length}]$).
-   * Pocket length: $\text{board\_pocket\_length} = \text{board\_length} + \text{wire\_soldering\_space} + 2 \times \text{tolerance}$.
+   * Placed directly next to the front panel of the case ($Y \in [0 \dots \text{board\\_pocket\\_length}]$).
+   * Pocket length: $\text{board\\_pocket\\_length} = \text{board\\_length} + \text{wire\\_soldering\\_space} + 2 \times \text{tolerance}$.
    * Provides $40\dots 60$ mm of free space before the partition for convenient laying and soldering of power and signal wires.
 2. **Protective vertical partition (Partition Wall):**
    * In `enable_modular_partition = true` mode, the partition is formed as a separate flat plate `partition_panel()` that slides vertically into internal U-shaped grooves of the case (depth `partition_groove_depth = 1.2` mm).
