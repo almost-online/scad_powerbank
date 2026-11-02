@@ -53,7 +53,7 @@ enable_board_holders = true;        // true = built-in holders at the edges of t
 board_thickness = 1.1;             // Holder thickness (mm)
 board_holder_thick = 1.2;          // Holder width along Y (mm)
 board_holder_width = wire_soldering_space;          // Slot depth for the PCB (mm)
-board_holder_slot_depth = 1.5;    / Distance from the front panel to the start of the slot (mm)
+board_holder_slot_depth = 1.5;    // Distance from the front panel to the start of the slot (mm)
 board_holder_slot_offset = 6.0;   // Extra slot clearance over the board thickness (mm)
 
 // Internal partition parameters (board pocket).
