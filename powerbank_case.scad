@@ -50,11 +50,11 @@ wire_soldering_space = 20.0;
 // PCB side holder parameters (built into the case):
 // Fix the board at the edges of the compartment, with a slot for the PCB.
 enable_board_holders = true;        // true = built-in holders at the edges of the board compartment
-board_thickness = 1.1;             // Holder thickness (mm)
-board_holder_thick = 1.2;          // Holder width along Y (mm)
-board_holder_width = wire_soldering_space;          // Slot depth for the PCB (mm)
-board_holder_slot_depth = 1.5;    // Distance from the front panel to the start of the slot (mm)
-board_holder_slot_offset = 6.0;   // Extra slot clearance over the board thickness (mm)
+board_thickness = 1.1;             // PCB thickness (mm)
+board_holder_thick = 1.2;          // Holder thickness (mm)
+board_holder_width = wire_soldering_space; // Holder length along Y (mm)
+board_holder_slot_depth = 1.5;    // Slot depth for the PCB (mm)
+board_holder_slot_offset = 6.0;   // Distance from the front panel to the start of the slot (mm)
 
 // Internal partition parameters (board pocket).
 enable_partition = true;
@@ -217,27 +217,27 @@ module board_holder(side) {
     holder_height = part_panel_h;
 
     difference() {
-        // Основний блок тримача, що йде від дна вгору на всю висоту
+        // Main holder block extending from the bottom up the full height
         translate([holder_x, holder_y, holder_z])
             cube([holder_width, holder_len, holder_height]);
         
-        // Паз для плати, що врізається в тримач на глибину board_holder_slot_depth
-        // від внутрішнього краю до стінки, центрований по висоті
-        slot_w = board_holder_thick;  // Ширина пазу 1.2мм
+        // PCB slot cut into the holder to depth board_holder_slot_depth
+        // from the inner edge toward the wall, centered vertically
+        slot_w = board_holder_thick;  // Slot width 1.2mm
         slot_center_z = holder_z + inner_z / 2;
         slot_start_z = slot_center_z - slot_w / 2;
 
-        // Глибина пазу від внутрішнього краю тримача до стінки
+        // Slot depth from the inner edge of the holder to the wall
         if (side == "left") {
-            // Лівий тримач: паз йде від внутрішнього краю (holder_x + board_holder_thick)
-            // вліво на board_holder_slot_depth
+            // Left holder: slot goes from inner edge (holder_x + board_holder_thick)
+            // leftward by board_holder_slot_depth
             translate([holder_x + board_holder_thick,
                        board_holder_slot_offset + holder_y - 0.05,
                        holder_z])
                 cube([board_holder_slot_depth + 0.1, slot_w + 0.1, holder_height]);
         } else {
-            // Правий тримач: паз йде від внутрішнього краю (holder_x)
-            // вправо на board_holder_slot_depth
+            // Right holder: slot goes from inner edge (holder_x)
+            // rightward by board_holder_slot_depth
             translate([holder_x - 0.05,
                        board_holder_slot_offset + holder_y - 0.05,
                        holder_z])
